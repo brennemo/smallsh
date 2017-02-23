@@ -17,13 +17,26 @@ void main() {
 
 		fgets(commandLine, MAX_CHAR, stdin);
 		
-		ptr = strtok(commandLine, " ");
+		ptr = strtok(commandLine, " \n");
+
 		while (ptr != NULL) {
-			printf("%s\n", ptr);
-			ptr = strtok(NULL, " ");
+			if (strcmp(ptr, ">") == 0) {
+				printf("input!\n");
+			}   
+			
+			else if (strcmp(ptr, "<") == 0) {
+				printf("output!\n");
+			}
+			else if (strcmp(ptr, "&") == 0) {
+				printf("background process!\n");
+			}
+			
+
+			//printf("%s\n", ptr);
+			ptr = strtok(NULL, " \n");
 			++numArgs;
 		} 
-		printf("%d\n", numArgs);
+		//printf("%d\n", numArgs);
 	}
 
 }
