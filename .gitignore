@@ -39,3 +39,8 @@
 *.vcxproj.filters
 *.VC.VC.opendb
 *.suo
+*.pdb
+*.log
+*.idb
+*.ilk
+*.tlog
