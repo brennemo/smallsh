@@ -66,7 +66,7 @@ int main() {
 		//if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[numArgs - 1], "&") == 0) {
 			if (strcmp(args[0], "exit") == 0) {
 				//check # of args  
-				if (numArgs == 1)
+				if (numArgs == 1)		
 					smallsh_exit();
 				else
 					printf("");
@@ -106,19 +106,31 @@ int main() {
 
 void smallsh_exit() {
 	printf("EXIT!\n");
+	
+	//kill processes started before terminating self 
+
+	exit(0);
 }
 
 void smallsh_cd(char **args[MAX_ARGS], int numArgs) {
 	printf("CD!\n");
 
+	//change to directory in HOME environment variable 
 	if (numArgs == 1) {
 		printf("%s\n", args[0]);
+		chdir(getenv("HOME"));
 	}
+	//change to directory specified in argument 
 	else {
 		printf("%s %s\n", args[0], args[1]);
+		chdir(args[1]);
 	}
 }
 
 void smallsh_status() {
 	printf("STATUS!\n");
+
+	//print exit status or
+
+	//print terminating sginal of last foreground process 
 }
