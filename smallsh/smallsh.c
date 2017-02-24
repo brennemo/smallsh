@@ -6,19 +6,27 @@
 #define MAX_CHAR 2048
 #define MAX_ARGS 512
 
-void main() {
+void smallsh_exit();
+void smallsh_cd();
+void smallsh_status();
+
+int main() {
 	char commandLine[MAX_CHAR];
 	char *ptr; 
-	int numArgs = 0;
+	int i, numArgs;			 
+	char *args[MAX_ARGS];
 
 	while (1) {
+		numArgs = 0; 
+
 		printf(": ");		//use ': ' as prompt for each command line 
 		fflush(stdout);	//flush output buffer immediately after each output 
 
 		fgets(commandLine, MAX_CHAR, stdin);
 		
 		ptr = strtok(commandLine, " \n");
-
+		printf("command: %s\n", ptr);
+		
 		while (ptr != NULL) {
 			if (strcmp(ptr, ">") == 0) {
 				printf("input!\n");
@@ -30,13 +38,31 @@ void main() {
 			else if (strcmp(ptr, "&") == 0) {
 				printf("background process!\n");
 			}
-			
-
-			//printf("%s\n", ptr);
+			args[numArgs] = ptr;		//store 
 			ptr = strtok(NULL, " \n");
-			++numArgs;
+			numArgs++;
 		} 
-		//printf("%d\n", numArgs);
+		args[numArgs] = ptr;			//last argument 
+
+		printf("# Arguments: %d\n", numArgs);
+		for (i = 0; i < numArgs; i++) {
+			printf("%s ", args[i]);
+		}
+		printf("\n");
 	}
+
+	return 0;
+
+}		
+
+void smallsh_exit() {
+
+}
+
+void smallsh_cd() {
+
+}
+
+void smallsh_status() {
 
 }
