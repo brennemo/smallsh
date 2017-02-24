@@ -7,12 +7,6 @@
 #define MAX_CHAR 2048
 #define MAX_ARGS 512
 
-/*
-void smallsh_exit();
-void smallsh_cd(char **args[MAX_ARGS], int numArgs);
-void smallsh_status();
-*/
-
 int main() {
 	char commandLine[MAX_CHAR];
 	char *ptr; //*inputFile, *outputFile; 
@@ -66,63 +60,60 @@ int main() {
 		}
 			
 		//Check for built-in commands
-		//if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[numArgs - 1], "&") == 0) {
-			if (strcmp(args[0], "exit") == 0) {
-				//check # of args  
-				if (numArgs == 1)
-					//smallsh_exit();
-					exit(0);
-				else
-					printf("");
-			}
-			else if (strcmp(args[0], "cd") == 0) {
-				if (numArgs == 1 || numArgs == 2)
-					//smallsh_cd(args, numArgs);		//warning: passing argument 1 of 'smallsh_cd' from incompatible pointer type 
-					//change to directory in HOME environment variable 
-					if (numArgs == 1) {
-						printf("%s\n", args[0]);
-						if (chdir(getenv("HOME"))) {
-							perror("Cannot find HOME environment variable.\n");
-						}
-					}
 
-				//change to directory specified in argument 
-					else {
-						printf("%s %s\n", args[0], args[1]);
-						if (chdir(args[1])) {					//warning: passing argument 1 of 'chdir' from incompatible pointer type 
-							perror("Cannot find directory.\n");
-						}
+		if (strcmp(args[0], "exit") == 0) {
+			if (numArgs == 1)			//check # of args  
+				exit(0);
+			else
+				printf("");
+		}
+		else if (strcmp(args[0], "cd") == 0) {
+			if (numArgs == 1 || numArgs == 2)
+				//change to directory in HOME environment variable 
+				if (numArgs == 1) {
+					printf("%s\n", args[0]);
+					if (chdir(getenv("HOME"))) {
+						perror("Cannot find HOME environment variable.\n");
 					}
-				else 
-					printf("");
-			}
-			else if (strcmp(args[0], "status") == 0) {
-				printf("STATUS!\n");
-
-				//print exit status or
-				if (WIFEXITED(0)) {
-					int exitStatus = WEXITSTATUS(0);
 				}
 
-				//print terminating signal of last foreground process 
+			//change to directory specified in argument 
 				else {
-					int termSignal = WTERMSIG(0);
+					printf("%s %s\n", args[0], args[1]);
+					if (chdir(args[1])) {					//warning: passing argument 1 of 'chdir' from incompatible pointer type 
+						perror("Cannot find directory.\n");
+					}
 				}
+			else 
+				printf("");
+		}
+		else if (strcmp(args[0], "status") == 0) {
+			printf("STATUS!\n");
+
+			//print exit status or
+			if (WIFEXITED(0)) {
+				int exitStatus = WEXITSTATUS(0);
 			}
 
-			//Check for input and output files	and store names
-			/*
-			if (inputIndex != -1 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
-				inputFile = args[inputIndex + 1];
-				printf("Input file: %s\n", inputFile);
+			//print terminating signal of last foreground process 
+			else {
+				int termSignal = WTERMSIG(0);
 			}
-			if (outputIndex != -1 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
-				outputFile = args[outputIndex + 1];
-				printf("Output file: %s\n", outputFile);
-			}
-			*/
+		}
 
-		//}
+		//Check for input and output files	and store names
+		/*
+		if (inputIndex != -1 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
+			inputFile = args[inputIndex + 1];
+			printf("Input file: %s\n", inputFile);
+		}
+		if (outputIndex != -1 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
+			outputFile = args[outputIndex + 1];
+			printf("Output file: %s\n", outputFile);
+		}
+		*/
+
+
 		//Run other commands with fork(), exec(), and waitpid()
 		else {
 			printf("Other shell commands!\n");
@@ -132,46 +123,3 @@ int main() {
 	return 0;
 
 }		
-/*
-void smallsh_exit() {
-	printf("EXIT!\n");
-	
-	//kill processes started before terminating self 
-
-	exit(0);
-}
-
-void smallsh_cd(char **args[MAX_ARGS], int numArgs) {
-	printf("CD!\n");
-
-	//change to directory in HOME environment variable 
-	if (numArgs == 1) {
-		printf("%s\n", args[0]);
-		if (chdir(getenv("HOME"))) {
-			perror("Cannot find HOME environment variable.\n");
-		}
-	}
-
-	//change to directory specified in argument 
-	else {
-		printf("%s %s\n", args[0], args[1]);
-		if (chdir(args[1])) {					//warning: passing argument 1 of 'chdir' from incompatible pointer type 
-			perror("Cannot find directory.\n");
-		}
-	}
-}
-
-void smallsh_status() {
-	printf("STATUS!\n");
-
-	//print exit status or
-	if (WIFEXITED(0)) {
-		int exitStatus = WEXITSTATUS(0);
-	}
-
-	//print terminating signal of last foreground process 
-	else {
-		int termSignal = WTERMSIG(0);
-	}
-}
-*/
