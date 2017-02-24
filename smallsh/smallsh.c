@@ -7,7 +7,7 @@
 #define MAX_ARGS 512
 
 void smallsh_exit();
-void smallsh_cd();
+void smallsh_cd(char **args[MAX_ARGS], int numArgs);
 void smallsh_status();
 
 int main() {
@@ -63,12 +63,19 @@ int main() {
 		}
 			
 		//Check for built-in commands
-		if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[numArgs - 1], "&") == 0) {
+		//if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[numArgs - 1], "&") == 0) {
 			if (strcmp(args[0], "exit") == 0) {
-				smallsh_exit();
+				//check # of args  
+				if (numArgs == 1)
+					smallsh_exit();
+				else
+					printf("");
 			}
 			else if (strcmp(args[0], "cd") == 0) {
-				smallsh_cd();
+				if (numArgs == 1 || numArgs == 2)
+					smallsh_cd(&args, numArgs);
+				else 
+					printf("");
 			}
 			else if (strcmp(args[0], "status") == 0) {
 				smallsh_status();
@@ -86,7 +93,7 @@ int main() {
 			}
 			*/
 
-		}
+		//}
 		//Run other commands with fork(), exec(), and waitpid()
 		else {
 			printf("Other shell commands!\n");
@@ -101,8 +108,15 @@ void smallsh_exit() {
 	printf("EXIT!\n");
 }
 
-void smallsh_cd() {
+void smallsh_cd(char **args[MAX_ARGS], int numArgs) {
 	printf("CD!\n");
+
+	if (numArgs == 1) {
+		printf("%s\n", args[0]);
+	}
+	else {
+		printf("%s %s\n", args[0], args[1]);
+	}
 }
 
 void smallsh_status() {
