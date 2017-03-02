@@ -32,7 +32,7 @@ int main() {
 		
 		while (ptr != NULL) {
 			
-			if (strcmp(ptr, ">") == 0) {		//store index of input redirection symbol	
+			if (strcmp(ptr, ">") == 0) {			//store index of input redirection symbol	
 				printf("input!\n");
 				//inputRedirect = true; 
 				inputIndex = numArgs;
@@ -120,39 +120,36 @@ int main() {
 
 			//Check for input and output files	and store names
 
-			if (inputIndex != -1 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
+			if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
 				inputFile = args[inputIndex + 1];
 				printf("Input file: %s\n", inputFile);
 			}
-			if (outputIndex != -1 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
+			if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 				outputFile = args[outputIndex + 1];
 				printf("Output file: %s\n", outputFile);
 			}
 
 			//Remove symbol and file name from arguments list 
-			if (inputIndex != -1 && inputIndex < numArgs - 1) {
-				for (i = inputIndex; i < numArgs - 1; i++) 
-					args[i] = args[i + 1];					//remove redirection symbol
+			if (inputIndex >= 0 && inputIndex < numArgs - 1) {
+				for (i = inputIndex; i < numArgs - 2; i++) {
+					args[i] = args[i + 2];					//remove redirection symbol & filename 
+				}
 				
-				for (i = inputIndex+1; i < numArgs - 1; i++) 
-					args[i] = args[i + 1];					//remove file name 
-				
-				numArgs -= 2;				
+				numArgs -= 2;	
+				outputIndex -= 2; 
 			}
 
-			if (outputIndex != -1 && outputIndex < numArgs - 1) {
-				for (i = outputIndex; i < numArgs - 1; i++) 
-					args[i] = args[i + 1];					//remove redirection symbol
-				
-				for (i = outputIndex + 1; i < numArgs - 1; i++)
-					args[i] = args[i + 1];					//remove file name 
+			if (outputIndex >= 0 && outputIndex < numArgs - 1) {
+				for (i = outputIndex; i < numArgs - 2; i++) 
+					args[i] = args[i + 2];					//remove redirection symbol & filename 	
 				
 				numArgs -= 2;
 			}
+			
 
 			//test print
 			for (i = 0; i < numArgs; i++) {
-				printf(" ", args[i]);
+				printf("%s ", args[i]);
 			}
 			printf("\n");
 
