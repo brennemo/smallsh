@@ -50,10 +50,16 @@ int main() {
 					outputIndex = numArgs;
 				}
 
-				else if (strcmp(ptr, "$") == 0) {		//expand $$ to pid of shell  		
+				/*
+				else if (strcmp(ptr, "$") == 0) {		//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
 					printf("Going to expand $$ to pid!!\n");
 				}
-
+				*/
+				for (i = 1; i < strlen(ptr); i++) {
+					//printf("%c ", ptr[i]);
+					if ((ptr[i - 1] == '$') && (ptr[i] == '$'))
+						printf("Going to expand $$ to pid!!\n");
+				}
 
 
 				args[numArgs] = ptr;			//store command/argument in array 
