@@ -1,5 +1,5 @@
 #include <sys/types.h>		//pid_t, etc. 
-#include <unistd.h>
+//#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,8 +10,8 @@
 #define PID_BUFFER_SIZE 50
 
 int main() {
-	char commandLine[MAX_CHAR];
-	char *ptr, *inputFile, *outputFile; 
+	char commandLine[MAX_CHAR];						
+	char *ptr, *inputFile, *outputFile;				
 	int i, j;
 	int numArgs;
 	int inputIndex, outputIndex, pidIndex; 
@@ -33,23 +33,30 @@ int main() {
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
 		fgets(commandLine, MAX_CHAR, stdin);
-		ptr = strtok(commandLine, " \n");			
+		if (commandLine != NULL)
+			ptr = strtok(commandLine, " \n");			
 
-		if (strcmp(ptr, "#") != 0) {					//if not comment 
+		if (ptr != NULL && strcmp(ptr, "#") != 0) {					//if line is not comment 
 			while (ptr != NULL) {
 
 
-				if (strcmp(ptr, ">") == 0) {			//store index of input redirection symbol	
+				/*
+				** store index of input/output redirection symbols
+				*/
+				if (strcmp(ptr, ">") == 0) {				
 					printf("input!\n");
 					inputIndex = numArgs;
 				}
 
-				else if (strcmp(ptr, "<") == 0) {		//store index of output redirection symbol	
+				else if (strcmp(ptr, "<") == 0) {			
 					printf("output!\n");
 					outputIndex = numArgs;
 				}
 
-				//detect '$$' within string
+				/*
+				** detect '$$' within string and expand $$ to pid of 
+				** shell (should work when adjacent to quotes like in 'echo "PID: $$"')
+				*/
 				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
@@ -59,8 +66,6 @@ int main() {
 						}		
 					}
 				}
-
-				//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
 				if (pidIndex >= 0) {
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
@@ -77,9 +82,8 @@ int main() {
 						argWithPid[i] = ptr[i];						//copy part of string preceding $$ 
 					
 					j = 0;
-					for (i = pidIndex; i <= pidLen; i++) {
+					for (i = pidIndex; i <= pidLen; i++) 
 						argWithPid[i] = pidBuffer[j++];				//copy pid as string into arg string
-					}
 
 					if (pidIndex + pidLen < lenWithPid) {				//not end of string
 						j = pidIndex + 2; 
@@ -129,7 +133,7 @@ int main() {
 			}
 			else if (strcmp(args[0], "status") == 0) {
 				printf("STATUS!\n");
-
+				/*
 				//print exit status or
 				if (WIFEXITED(0)) {
 					int exitStatus = WEXITSTATUS(0);
@@ -139,6 +143,7 @@ int main() {
 				else {
 					int termSignal = WTERMSIG(0);
 				}
+				*/
 			}
 		
 
@@ -168,7 +173,6 @@ int main() {
 				//use dup2 to set up redirection
 
 				//Check for input and output files	and store names
-
 				if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
 					inputFile = args[inputIndex + 1];
 					printf("Input file: %s\n", inputFile);
@@ -208,8 +212,9 @@ int main() {
 
 				//clean up 
 			}										//if other command 
-		}											//if not 
-		if (argWithPid != NULL) free(argWithPid);
+			if (argWithPid != NULL) free(argWithPid);
+		}											//if not comment
+		
 	}												//main while loop					
 
 
