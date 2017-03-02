@@ -7,12 +7,14 @@
 
 #define MAX_CHAR 2048
 #define MAX_ARGS 512
+#define PID_BUFFER_SIZE 50
 
 int main() {
 	char commandLine[MAX_CHAR];
 	char *ptr, *inputFile, *outputFile; 
-	int i, numArgs, inputIndex, outputIndex;
+	int i, numArgs, inputIndex, outputIndex, pidIndex, pid, pidLen;
 	char *args[MAX_ARGS];
+	char pidBuffer[PID_BUFFER_SIZE];
 
 	//bool inputRedirect, outputRedirect, backgroundProcess; 
 	bool backgroundProcess; 
@@ -21,7 +23,7 @@ int main() {
 
 	while (1) {				    
 		numArgs = 0; 
-		inputIndex = outputIndex = -1;
+		inputIndex = outputIndex = pidIndex = -1;
 		//inputRedirect = outputRedirect = backgroundProcess = false;
 		backgroundProcess = false;
 
@@ -50,15 +52,20 @@ int main() {
 					outputIndex = numArgs;
 				}
 
-				/*
-				else if (strcmp(ptr, "$") == 0) {		//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
-					printf("Going to expand $$ to pid!!\n");
-				}
-				*/
-				for (i = 1; i < strlen(ptr); i++) {
-					//printf("%c ", ptr[i]);
-					if ((ptr[i - 1] == '$') && (ptr[i] == '$'))
-						printf("Going to expand $$ to pid!!\n");
+				//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
+				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
+					for (i = 1; i < strlen(ptr); i++) {
+						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
+							printf("Going to expand $$ to pid!!\n");
+							pidIndex = i - 1; 
+							break;
+						}		
+					}
+					//replace $$ with pid
+					pid = getpid();
+					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
+					pidLen = strlen(pidBuffer);
+					printf("Pid %d has length %d\n", pid, pidLen);
 				}
 
 
@@ -74,13 +81,6 @@ int main() {
 				printf("%s ", args[i]);
 			}
 			printf("\n");
-
-			//Check for background process at end of command 
-			/*
-			if (strcmp(args[numArgs - 1], "&") == 0) {
-				printf("background process!\n");
-			}
-			*/
 			
 			//Check for built-in commands
 			if (strcmp(args[0], "exit") == 0) {
