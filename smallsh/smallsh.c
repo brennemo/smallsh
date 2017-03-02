@@ -1,5 +1,5 @@
 #include <sys/types.h>		//pid_t, etc. 
-//#include <unistd.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,7 +57,7 @@ int main() {
 				** detect '$$' within string and expand $$ to pid of 
 				** shell (should work when adjacent to quotes like in 'echo "PID: $$"')
 				*/
-				/*
+				
 				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
@@ -94,7 +94,7 @@ int main() {
 
 					ptr = argWithPid;								//reassign ptr to updated string
 				}
-				*/
+				
 
 
 				args[numArgs] = ptr;			//store command/argument in array 
@@ -104,11 +104,13 @@ int main() {
  
 			args[numArgs] = ptr;					//last argument 
 
+			/*
 			printf("# Arguments: %d\n", numArgs);
 			for (i = 0; i < numArgs; i++) {
 				printf("%s ", args[i]);
 			}
 			printf("\n");
+			*/
 			
 			//Check for built-in commands
 			if (strcmp(args[0], "exit") == 0) {
@@ -197,15 +199,15 @@ int main() {
 					for (i = outputIndex; i < numArgs - 2; i++) 
 						args[i] = args[i + 2];					//remove redirection symbol & filename 	
 				
-					numArgs -= 2;
 				}
+
 
 				//printf("Redirecting stdin\n");
 
 				//printf("Redirecting stdout\n");
 
 				//exec command 
-				printf("\n");
+				//printf("\n");
 					//expand $$ into process ID of shell itself 
 
 					//look for non-built in commands in PATH variable 
@@ -214,12 +216,15 @@ int main() {
 
 				//clean up 
 			}										//if other command 
-			//if (argWithPid != NULL) 
-			//	free(argWithPid);						//SEG FAULT 
+			/*
+			if (argWithPid != NULL) 
+				free(argWithPid);						//SEG FAULT 
+				*/
 		}											//if not comment
 		
 	}												//main while loop					
-
+	if (argWithPid != NULL)
+		free(argWithPid);
 
 	return 0;
 
