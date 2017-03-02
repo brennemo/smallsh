@@ -12,7 +12,10 @@
 int main() {
 	char commandLine[MAX_CHAR];
 	char *ptr, *inputFile, *outputFile; 
-	int i, numArgs, inputIndex, outputIndex, pidIndex, pid, pidLen, lenWithPid;
+	int i, j;
+	int numArgs;
+	int inputIndex, outputIndex, pidIndex; 
+	int pid, pidLen, lenWithPid;
 	char *args[MAX_ARGS];
 	char pidBuffer[PID_BUFFER_SIZE];
 	char* argWithPid; 
@@ -62,7 +65,9 @@ int main() {
 							break;
 						}		
 					}
-					//replace $$ with pid
+				}
+
+				if (pidIndex >= 0) {
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
 					pidLen = strlen(pidBuffer);						//get length of pid as string
@@ -73,10 +78,25 @@ int main() {
 
 					argWithPid = malloc(lenWithPid * sizeof(char));		//maybe store these in an array for cleanup?
 
-					for (i = 0; i < strlen(ptr); i++) {
-						argWithPid[i] = ptr[i];
+					for (i = 0; i < pidIndex; i++) 
+						argWithPid[i] = ptr[i];						//copy part of string preceding $$ 
+					
+					j = 0;
+					for (i = pidIndex; i <= pidLen; i++) {
+						argWithPid[i] = pidBuffer[j++];				//copy pid as string into arg string
 					}
-					printf("argWithPid: %s \n", argWithPid);
+
+					//printf("pidIndex + pidLen: %d lenWithPid: %d\n", pidIndex + pidLen, lenWithPid);
+					//argWithPid[pidIndex + pidLen] = '!';
+					if (pidIndex + pidLen < lenWithPid) {
+						j = pidIndex + 2; 
+						for (i = pidIndex + pidLen; i < lenWithPid; i++)
+							argWithPid[i] = ptr[j++];						//copy part of string following $$ if applicable 
+					}
+
+					//printf("pidIndex + pidLen: %d lenWithPid: %d\n", pidIndex + pidLen, lenWithPid);
+					//printf("argWithPid: %s \n", argWithPid);
+					ptr = argWithPid;
 				}
 
 
