@@ -70,7 +70,8 @@ int main() {
 					lenWithPid = strlen(pidBuffer) + strlen(ptr) - 2;		//new length with pid replacing $$ 
 					printf("New string length: %d\n", lenWithPid);
 
-					argWithPid = malloc(lenWithPid * sizeof(char));		//maybe store these in an array for cleanup?
+					argWithPid = malloc(lenWithPid * sizeof(char));		
+					memset(argWithPid, '\0', lenWithPid);
 
 					for (i = 0; i < pidIndex; i++) 
 						argWithPid[i] = ptr[i];						//copy part of string preceding $$ 
@@ -207,7 +208,8 @@ int main() {
 
 				//clean up 
 			}										//if other command 
-		}											//if not comment
+		}											//if not 
+		if (argWithPid != NULL) free(argWithPid);
 	}												//main while loop					
 
 
