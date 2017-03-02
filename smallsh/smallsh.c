@@ -10,6 +10,7 @@
 #define PID_BUFFER_SIZE 50
 
 int main() {
+	int shellStatus = 0;
 	char commandLine[MAX_CHAR];						
 	char *ptr, *inputFile, *outputFile;				
 	int i, j;
@@ -136,18 +137,16 @@ int main() {
 					}
 			}
 			else if (strcmp(args[0], "status") == 0) {
-				printf("STATUS!\n");
-				/*
-				//print exit status or
+				//print exit status or...
 				if (WIFEXITED(0)) {
-					int exitStatus = WEXITSTATUS(0);
+					printf("exit value %d\n", WEXITSTATUS(shellStatus));
 				}
 
 				//print terminating signal of last foreground process 
 				else {
-					int termSignal = WTERMSIG(0);
+					printf("terminated by signal %d\n", WTERMSIG(shellStatus));
 				}
-				*/
+				
 			}
 		
 
