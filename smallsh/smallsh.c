@@ -57,6 +57,7 @@ int main() {
 				** detect '$$' within string and expand $$ to pid of 
 				** shell (should work when adjacent to quotes like in 'echo "PID: $$"')
 				*/
+				/*
 				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
@@ -93,6 +94,7 @@ int main() {
 
 					ptr = argWithPid;								//reassign ptr to updated string
 				}
+				*/
 
 
 				args[numArgs] = ptr;			//store command/argument in array 
@@ -212,7 +214,8 @@ int main() {
 
 				//clean up 
 			}										//if other command 
-			if (argWithPid != NULL) free(argWithPid);
+			//if (argWithPid != NULL) 
+			//	free(argWithPid);						//SEG FAULT 
 		}											//if not comment
 		
 	}												//main while loop					
