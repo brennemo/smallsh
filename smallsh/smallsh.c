@@ -3,19 +3,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_CHAR 2048
 #define MAX_ARGS 512
 
 int main() {
 	char commandLine[MAX_CHAR];
-	char *ptr; //*inputFile, *outputFile; 
-	int i, numArgs; //inputIndex, outputIndex;
+	char *ptr, *inputFile, *outputFile; 
+	int i, numArgs, inputIndex, outputIndex;
 	char *args[MAX_ARGS];
 
-	while (1) {
+	//bool inputRedirect, outputRedirect, backgroundProcess; 
+	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
+
+	while (1) {				    
 		numArgs = 0; 
-		//inputIndex = outputIndex = -1;
+		inputIndex = outputIndex = -1;
+		//inputRedirect = outputRedirect = backgroundProcess = false;
 
 		printf(": ");		//use ': ' as prompt for each command line 
 		fflush(stdout);	//flush output buffer immediately after each output 
@@ -26,22 +31,25 @@ int main() {
 		printf("command: %s\n", ptr);
 		
 		while (ptr != NULL) {
-			/*
-			if (strcmp(ptr, ">") == 0) {
+			
+			if (strcmp(ptr, ">") == 0) {		//store index of input redirection symbol	
 				printf("input!\n");
+				//inputRedirect = true; 
 				inputIndex = numArgs;
 			}   
 			
-			else if (strcmp(ptr, "<") == 0) {
+			else if (strcmp(ptr, "<") == 0) {		//store index of output redirection symbol	
 				printf("output!\n");
+				//outputRedirect = true; 
 				outputIndex = numArgs; 
 			}
-			*/
-			/*
-			else if (strcmp(ptr, "&") == 0) {
+			
+			else if (strcmp(ptr, "&") == 0) {		//
 				printf("background process!\n");
+				//backgroundProcess = true; 
 			}  
-			*/
+			
+
 			args[numArgs] = ptr;			//store command/argument in array 
 			ptr = strtok(NULL, " \n");		 
 			numArgs++;
@@ -60,12 +68,11 @@ int main() {
 		}
 			
 		//Check for built-in commands
-
 		if (strcmp(args[0], "exit") == 0) {
-			if (numArgs == 1)			//check # of args  
+		//	if (numArgs == 1)			//check # of args  
 				exit(0);
-			else
-				printf("");
+		//	else
+		//		printf("");
 		}
 		else if (strcmp(args[0], "cd") == 0) {
 			if (numArgs == 1 || numArgs == 2)
@@ -80,7 +87,7 @@ int main() {
 			//change to directory specified in argument 
 				else {
 					printf("%s %s\n", args[0], args[1]);
-					if (chdir(args[1])) {					//warning: passing argument 1 of 'chdir' from incompatible pointer type 
+					if (chdir(args[1])) {					
 						perror("Cannot find directory.\n");
 					}
 				}
@@ -100,23 +107,72 @@ int main() {
 				int termSignal = WTERMSIG(0);
 			}
 		}
-
-		//Check for input and output files	and store names
-		/*
-		if (inputIndex != -1 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
-			inputFile = args[inputIndex + 1];
-			printf("Input file: %s\n", inputFile);
-		}
-		if (outputIndex != -1 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
-			outputFile = args[outputIndex + 1];
-			printf("Output file: %s\n", outputFile);
-		}
-		*/
-
+		
 
 		//Run other commands with fork(), exec(), and waitpid()
 		else {
 			printf("Other shell commands!\n");
+
+			//spawn child process for i/o redirection
+			printf("Creating child process\n");
+
+			//use dup2 to set up redirection
+
+			//Check for input and output files	and store names
+
+			if (inputIndex != -1 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
+				inputFile = args[inputIndex + 1];
+				printf("Input file: %s\n", inputFile);
+			}
+			if (outputIndex != -1 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
+				outputFile = args[outputIndex + 1];
+				printf("Output file: %s\n", outputFile);
+			}
+
+			//Remove symbol and file name from arguments list 
+			if (inputIndex != -1 && inputIndex < numArgs - 1) {
+				for (i = inputIndex; i < numArgs - 1; i++) 
+					args[i] = args[i + 1];					//remove redirection symbol
+				
+				for (i = inputIndex+1; i < numArgs - 1; i++) 
+					args[i] = args[i + 1];					//remove file name 
+				
+				numArgs -= 2;				
+			}
+
+			if (outputIndex != -1 && outputIndex < numArgs - 1) {
+				for (i = outputIndex; i < numArgs - 1; i++) 
+					args[i] = args[i + 1];					//remove redirection symbol
+				
+				for (i = outputIndex + 1; i < numArgs - 1; i++)
+					args[i] = args[i + 1];					//remove file name 
+				
+				numArgs -= 2;
+			}
+
+			//test print
+			for (i = 0; i < numArgs; i++) {
+				printf(" ", args[i]);
+			}
+			printf("\n");
+
+
+
+			printf("Redirecting stdin\n");
+
+			printf("Redirecting stdout\n");
+			//do not pass symbol and source as args 
+			printf("\n");
+
+			//exec command 
+			printf("\n");
+				//expand $$ into process ID of shell itself 
+
+				//look for non-built in commands in PATH variable 
+				
+				//command not found - error message & set exit status to 1 
+
+			//clean up 
 		}
 	}
 
