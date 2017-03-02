@@ -20,7 +20,6 @@ int main() {
 	char pidBuffer[PID_BUFFER_SIZE];
 	char* argWithPid; 
 
-	//bool inputRedirect, outputRedirect, backgroundProcess; 
 	bool backgroundProcess; 
 	int numBgProcesses = 0;
 	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
@@ -28,23 +27,17 @@ int main() {
 	while (1) {				    
 		numArgs = 0; 
 		inputIndex = outputIndex = pidIndex = -1;
-		//inputRedirect = outputRedirect = backgroundProcess = false;
 		backgroundProcess = false;
 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
 		fgets(commandLine, MAX_CHAR, stdin);
-		
 		ptr = strtok(commandLine, " \n");			
-		//printf("command: %s\n", ptr);
+
 		if (strcmp(ptr, "#") != 0) {					//if not comment 
 			while (ptr != NULL) {
 
-				//ignore comments beginning with '#'
-				/*if (strcmp(ptr, "#") == 0) {
-					continue;
-				}	*/
 
 				if (strcmp(ptr, ">") == 0) {			//store index of input redirection symbol	
 					printf("input!\n");
@@ -56,7 +49,7 @@ int main() {
 					outputIndex = numArgs;
 				}
 
-				//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
+				//detect '$$' within string
 				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
@@ -67,6 +60,7 @@ int main() {
 					}
 				}
 
+				//expand $$ to pid of shell  (should work with 'echo "PID: $$"')	
 				if (pidIndex >= 0) {
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
@@ -86,17 +80,13 @@ int main() {
 						argWithPid[i] = pidBuffer[j++];				//copy pid as string into arg string
 					}
 
-					//printf("pidIndex + pidLen: %d lenWithPid: %d\n", pidIndex + pidLen, lenWithPid);
-					//argWithPid[pidIndex + pidLen] = '!';
-					if (pidIndex + pidLen < lenWithPid) {
+					if (pidIndex + pidLen < lenWithPid) {				//not end of string
 						j = pidIndex + 2; 
 						for (i = pidIndex + pidLen; i < lenWithPid; i++)
-							argWithPid[i] = ptr[j++];						//copy part of string following $$ if applicable 
+							argWithPid[i] = ptr[j++];				//copy part of string following $$ if applicable 
 					}
 
-					//printf("pidIndex + pidLen: %d lenWithPid: %d\n", pidIndex + pidLen, lenWithPid);
-					//printf("argWithPid: %s \n", argWithPid);
-					ptr = argWithPid;
+					ptr = argWithPid;								//reassign ptr to updated string
 				}
 
 
