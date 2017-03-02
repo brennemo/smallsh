@@ -41,15 +41,14 @@ int main() {
 				}	*/
 
 				if (strcmp(ptr, ">") == 0) {			//store index of input redirection symbol	
-					//printf("input!\n");
+					printf("input!\n");
 					inputIndex = numArgs;
 				}
 
 				else if (strcmp(ptr, "<") == 0) {		//store index of output redirection symbol	
-					//printf("output!\n");
+					printf("output!\n");
 					outputIndex = numArgs;
 				}
-
 
 				else if (strcmp(ptr, "$") == 0) {		//expand $$ to pid of shell  		
 					printf("Going to expand $$ to pid!!\n");
@@ -60,7 +59,7 @@ int main() {
 				args[numArgs] = ptr;			//store command/argument in array 
 				ptr = strtok(NULL, " \n");
 				numArgs++;
-			}
+			}								//while ptr != null
  
 			args[numArgs] = ptr;					//last argument 
 
@@ -71,9 +70,11 @@ int main() {
 			printf("\n");
 
 			//Check for background process at end of command 
+			/*
 			if (strcmp(args[numArgs - 1], "&") == 0) {
 				printf("background process!\n");
 			}
+			*/
 			
 			//Check for built-in commands
 			if (strcmp(args[0], "exit") == 0) {
@@ -120,7 +121,7 @@ int main() {
 				//check for background process - & at end of args 
 				if (strcmp(args[numArgs - 1], "&") == 0) {
 					printf("Background process!\n");
-					int dummy_pid = 1234;				//placeholder for testing 
+					int dummy_pid = getpid();				//placeholder for testing 
 					bgProcesses[numBgProcesses] = dummy_pid;
 					numBgProcesses++;
 
