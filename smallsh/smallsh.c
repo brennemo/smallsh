@@ -12,9 +12,10 @@
 int main() {
 	char commandLine[MAX_CHAR];
 	char *ptr, *inputFile, *outputFile; 
-	int i, numArgs, inputIndex, outputIndex, pidIndex, pid, pidLen;
+	int i, numArgs, inputIndex, outputIndex, pidIndex, pid, pidLen, lenWithPid;
 	char *args[MAX_ARGS];
 	char pidBuffer[PID_BUFFER_SIZE];
+	char* argWithPid; 
 
 	//bool inputRedirect, outputRedirect, backgroundProcess; 
 	bool backgroundProcess; 
@@ -64,8 +65,18 @@ int main() {
 					//replace $$ with pid
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
-					pidLen = strlen(pidBuffer);
+					pidLen = strlen(pidBuffer);						//get length of pid as string
 					printf("Pid %d has length %d\n", pid, pidLen);
+
+					lenWithPid = strlen(pidBuffer) + strlen(ptr) - 2;		//new length with pid replacing $$ 
+					printf("New string length: %d\n", lenWithPid);
+
+					argWithPid = malloc(lenWithPid * sizeof(char));		//maybe store these in an array for cleanup?
+
+					for (i = 0; i < strlen(ptr); i++) {
+						argWithPid[i] = ptr[i];
+					}
+					printf("argWithPid: %s \n", argWithPid);
 				}
 
 
