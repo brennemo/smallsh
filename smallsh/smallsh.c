@@ -15,15 +15,18 @@ int main() {
 	char *args[MAX_ARGS];
 
 	//bool inputRedirect, outputRedirect, backgroundProcess; 
+	bool backgroundProcess; 
+	int numBgProcesses = 0;
 	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
 
 	while (1) {				    
 		numArgs = 0; 
 		inputIndex = outputIndex = -1;
 		//inputRedirect = outputRedirect = backgroundProcess = false;
+		backgroundProcess = false;
 
-		printf(": ");		//use ': ' as prompt for each command line 
-		fflush(stdout);	//flush output buffer immediately after each output 
+		printf(": ");						//use ': ' as prompt for each command line 
+		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
 		fgets(commandLine, MAX_CHAR, stdin);
 		
@@ -49,10 +52,11 @@ int main() {
 				outputIndex = numArgs; 
 			}
 			
-			else if (strcmp(ptr, "&") == 0) {		//
-				printf("background process!\n");
-				//backgroundProcess = true; 
-			}  
+			
+			else if (strcmp(ptr, "$") == 0) {		//expand $$ to pid of shell  		
+				printf("Going to expand $$ to pid!!\n");
+			}
+			
 			
 
 			args[numArgs] = ptr;			//store command/argument in array 
@@ -74,11 +78,9 @@ int main() {
 			
 		//Check for built-in commands
 		if (strcmp(args[0], "exit") == 0) {
-		//	if (numArgs == 1)			//check # of args  
 				exit(0);
-		//	else
-		//		printf("");
 		}
+
 		else if (strcmp(args[0], "cd") == 0) {
 			if (numArgs == 1 || numArgs == 2)
 				//change to directory in HOME environment variable 
@@ -96,8 +98,6 @@ int main() {
 						perror("Cannot find directory.\n");
 					}
 				}
-			else 
-				printf("");
 		}
 		else if (strcmp(args[0], "status") == 0) {
 			printf("STATUS!\n");
@@ -117,6 +117,14 @@ int main() {
 		//Run other commands with fork(), exec(), and waitpid()
 		else {
 			printf("Other shell commands!\n");
+
+			//check for background process - & at end of args 
+			if (strcmp(args[numArgs - 1], "&")) {
+				printf("Background process!\n");
+				int dummy_pid = 1234;				//placeholder for testing 
+				bgProcesses[numBgProcesses] = dummy_pid;
+				numBgProcesses++;
+			}
 
 			//spawn child process for i/o redirection
 			printf("Creating child process\n");
