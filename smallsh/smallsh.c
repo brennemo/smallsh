@@ -31,6 +31,11 @@ int main() {
 		printf("command: %s\n", ptr);
 		
 		while (ptr != NULL) {
+
+			//ignore comments beginning with '#'
+			if (strcmp(ptr, "#") == 0) {
+				continue; 
+			}
 			
 			if (strcmp(ptr, ">") == 0) {			//store index of input redirection symbol	
 				printf("input!\n");
@@ -135,8 +140,7 @@ int main() {
 					args[i] = args[i + 2];					//remove redirection symbol & filename 
 				}
 				
-				numArgs -= 2;	
-				outputIndex -= 2; 
+				numArgs -= 2;	outputIndex -= 2;				//adjust indices 
 			}
 
 			if (outputIndex >= 0 && outputIndex < numArgs - 1) {
@@ -145,21 +149,10 @@ int main() {
 				
 				numArgs -= 2;
 			}
-			
 
-			//test print
-			for (i = 0; i < numArgs; i++) {
-				printf("%s ", args[i]);
-			}
-			printf("\n");
+			//printf("Redirecting stdin\n");
 
-
-
-			printf("Redirecting stdin\n");
-
-			printf("Redirecting stdout\n");
-			//do not pass symbol and source as args 
-			printf("\n");
+			//printf("Redirecting stdout\n");
 
 			//exec command 
 			printf("\n");

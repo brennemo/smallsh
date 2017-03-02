@@ -31,8 +31,7 @@ void catchSIGUSR2(int signo) {
 
 
 void main() {
-	pid_t spawnPid = -5;
-	int childExitMethod = -5; 
+	pid_t spawnPid = -5;	int childExitMethod = -5; 
 	
 	spawnPid = fork();
 	if (spawnPid == -1) {
