@@ -123,7 +123,15 @@ int main() {
 					int dummy_pid = 1234;				//placeholder for testing 
 					bgProcesses[numBgProcesses] = dummy_pid;
 					numBgProcesses++;
+
+					//test print
+					printf("Background processes:\n");
+					for (i = 0; i < numBgProcesses; i++) {
+						printf("%d ", bgProcesses[i]);
+					}
+					printf("\n");
 				}
+				
 
 				//spawn child process for i/o redirection
 				printf("Creating child process\n");
@@ -170,9 +178,9 @@ int main() {
 					//command not found - error message & set exit status to 1 
 
 				//clean up 
-			}
-		}
-	}									//if not comment
+			}										//if other command 
+		}											//if not comment
+	}												//main while loop					
 
 
 	return 0;
