@@ -221,26 +221,26 @@ int main() {
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
-						printf("Input file: %s\n", inputFile);
+						//printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);							
-						printf("sourceFD = open(inputFile, O_RDONLY);\n");
+						//printf("sourceFD = open(inputFile, O_RDONLY);\n");
 						if (sourceFD == -1) { perror("source open()"); exit(1); }
 						inputResult = dup2(sourceFD, 0);						//ERROR HERE
-						printf("inputResult = dup2(sourceFD, 0);\n");
+						//printf("inputResult = dup2(sourceFD, 0);\n");
 						if (inputResult == -1) { perror("dup2()"); exit(1); }
-						printf("if (inputResult == -1) { perror(\"target open()\"); exit(1); }\n");
+						//printf("if (inputResult == -1) { perror(\"target open()\"); exit(1); }\n");
 						close(sourceFD);		//warning: expected int, is char*
-						printf("close(sourceFD);\n");
+						//printf("close(sourceFD);\n");
 
-						/*
-						printf("TEST!!!\n");		//not reaching here 
+						
+						//printf("TEST!!!\n");		//not reaching here 
 
 						for (i = inputIndex; i < numArgs - 2; i++) {
 							args[i] = args[i + 2];					//remove redirection symbol & filename 
 						}
 						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
-						*/
+						
 					}
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
@@ -299,7 +299,7 @@ int main() {
 					for (i = 0; i < numArgs; i++) {
 						printf("%s ", args[i]);
 					}
-					printf("\n");
+					printf("\n");													 
 					*/
 
 
