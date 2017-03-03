@@ -67,12 +67,12 @@ int main() {
 				** store index of input/output redirection symbols
 				*/
 				if (strcmp(ptr, ">") == 0) {				
-					printf("input!\n");
+					//printf("input!\n");
 					inputIndex = numArgs;
 				}
 
 				else if (strcmp(ptr, "<") == 0) {			
-					printf("output!\n");
+					//printf("output!\n");
 					outputIndex = numArgs;
 				}
 
@@ -84,7 +84,7 @@ int main() {
 				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
-							printf("Going to expand $$ to pid!!\n");
+							//printf("Going to expand $$ to pid!!\n");
 							pidIndex = i - 1; 
 							break;
 						}		
@@ -94,10 +94,10 @@ int main() {
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
 					pidLen = strlen(pidBuffer);						//get length of pid as string
-					printf("Pid %d has length %d\n", pid, pidLen);
+					//printf("Pid %d has length %d\n", pid, pidLen);
 
 					lenWithPid = strlen(pidBuffer) + strlen(ptr) - 2;		//new length with pid replacing $$ 
-					printf("New string length: %d\n", lenWithPid);
+					//printf("New string length: %d\n", lenWithPid);
 
 					argWithPid = malloc(lenWithPid * sizeof(char));		
 					memset(argWithPid, '\0', lenWithPid);
@@ -142,7 +142,7 @@ int main() {
 				if (numArgs == 1 || numArgs == 2)
 					//change to directory in HOME environment variable 
 					if (numArgs == 1) {
-						printf("%s\n", args[0]);
+						//printf("%s\n", args[0]);
 						if (chdir(getenv("HOME"))) {
 							perror("Cannot find HOME environment variable.\n");
 						}
@@ -150,7 +150,7 @@ int main() {
 
 				//change to directory specified in argument 
 					else {
-						printf("%s %s\n", args[0], args[1]);
+						//printf("%s %s\n", args[0], args[1]);
 						if (chdir(args[1])) {					
 							perror("Cannot find directory.\n");
 						}
@@ -176,7 +176,7 @@ int main() {
 
 				//check for background process - & at end of args 
 				if (strcmp(args[numArgs - 1], "&") == 0) {
-					printf("Background process!\n");
+					//printf("Background process!\n");
 					int dummy_pid = getpid();				//placeholder for testing 
 					bgProcesses[numBgProcesses] = dummy_pid;
 					numBgProcesses++;
@@ -214,7 +214,7 @@ int main() {
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						inputFile = args[inputIndex + 1];
-						printf("Input file: %s\n", inputFile);
+						//printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);
 						inputResult = dup2(sourceFD, 0);
@@ -223,7 +223,7 @@ int main() {
 					}
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						printf("Output file: %s\n", outputFile);
+						//printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 						outputResult = dup2(sourceFD, 1);
@@ -247,25 +247,25 @@ int main() {
 					//new process to execute command
 					if (execvp(args[0], args) < 0) {
 						perror("Could not find command.");
-						//shellStatus = 1;		//?
+						shellStatus = 1;		//?
 						exit(1);
 					}
 
-					printf("CHILD: PID: %d, exiting!\n", childPid);
+					//printf("CHILD: PID: %d, exiting!\n", childPid);
 					exit(0);
 				}
 
-				printf("PARENT: PID: %d, waiting...\n", childPid);
+				//printf("PARENT: PID: %d, waiting...\n", childPid);
 				waitpid(childPid, &childExitMethod, 0);
-				printf("PARENT: Child process terminated, exiting!\n");
+				//printf("PARENT: Child process terminated, exiting!\n");
 
 				if (WIFEXITED(childExitMethod)) {
-					printf("The process exited normally\n");
+					//printf("The process exited normally\n");
 					int exitStatus = WEXITSTATUS(childExitMethod);
-					printf("exit status was %d\n", exitStatus);
+					//printf("exit status was %d\n", exitStatus);
 				}
-				else
-					printf("Child terminated by signal\n");
+				//else
+					//printf("Child terminated by signal\n");
 
 				//clean up 
 			}										//if other command 
@@ -284,11 +284,11 @@ int main() {
 
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
-	printf("\nForeground signal terminating.\n");
+	//printf("\nForeground signal terminating.\n");
 }
 
 void catchSIGTSTP(int signo) {
-	printf("\nEntering foreground-only mode (& is now ignored)\n");
+	//printf("\nEntering foreground-only mode (& is now ignored)\n");
 
-	printf("\nExiting foreground-only mode\n");
+	//printf("\nExiting foreground-only mode\n");
 }

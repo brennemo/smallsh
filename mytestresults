@@ -1,0 +1,108 @@
+Pre-script Info
+PID: 3957
+: BEGINNING TEST SCRIPT
+: 
+: --------------------
+: Using comment (5 points if only next prompt is displayed next)
+: Could not find command.: No such file or directory
+: 
+: 
+: --------------------
+: ls (10 points for returning dir contents)
+: badfile
+junk
+mytestresults
+p3testscript
+practice
+smallsh
+smallsh.c
+: 
+: 
+: --------------------
+: ls out junk
+: ls: cannot access >: No such file or directory
+junk
+: 
+: 
+: --------------------
+: cat junk (15 points for correctly returning contents of junk)
+: : 
+: 
+: --------------------
+: wc in junk (15 points for returning correct numbers from wc)
+: source open(): Bad file descriptor
+: 
+: 
+: --------------------
+: wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
+: target open(): Bad file descriptor
+: cat: junk2: No such file or directory
+: 
+: 
+: --------------------
+: test -f badfile (10 points for returning error value of 1, note extraneous &)
+: : exit value 0
+: 
+: 
+: --------------------
+: wc in badfile (10 points for returning text error)
+: source open(): Bad file descriptor
+: 
+: 
+: --------------------
+: badfile (10 points for returning text error)
+: Could not find command.: Permission denied
+: 
+: 
+: --------------------
+: sleep 100 background (10 points for returning process ID of sleeper)
+: sleep: invalid time interval `&'
+Try `sleep --help' for more information.
+: 
+: 
+: --------------------
+: pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
+: (Ignore message about Operation Not Permitted)
+: pkill: 3951 - Operation not permitted
+pkill: 13666 - Operation not permitted
+: 
+: 
+: --------------------
+: sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
+: sleep: invalid time interval `&'
+Try `sleep --help' for more information.
+: : 
+: 
+: --------------------
+: pwd
+: /nfs/stak/students/b/brennemo/cs344/smallsh
+: 
+: 
+: --------------------
+: cd
+: : 
+: 
+: --------------------
+: pwd (10 points for being in the HOME dir)
+: /nfs/stak/students/b/brennemo
+: 
+: 
+: --------------------
+: mkdir testdir
+: mkdir: cannot create directory `testdir': File exists
+: 
+: 
+: --------------------
+: cd testdir
+: : 
+: 
+: --------------------
+: pwd (5 points for being in the newly created dir)
+: /nfs/stak/students/b/brennemo/testdir
+: --------------------
+: Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
+: : Fri Mar  3 11:05:29 PST 2017
+: sleep: invalid time interval `&'
+Try `sleep --help' for more information.
+: Fri Mar  3 11:05:29 PST 2017
+: : 
