@@ -190,16 +190,6 @@ int main() {
 					printf("\n");
 					*/
 				}
-				
-
-				//spawn child process for i/o redirection
-				//printf("Creating child process\n");
-
-					//expand $$ into process ID of shell itself (done above)
-
-					//look for non-built in commands in PATH variable 
-				
-					//command not found - error message & set exit status to 1 
 
 				//child process
 				pid_t childPid = -5;	int childExitMethod = -5;
@@ -269,10 +259,6 @@ int main() {
 
 				//clean up 
 			}										//if other command 
-			/*
-			if (argWithPid != NULL) 
-				free(argWithPid);						//SEG FAULT 
-				*/
 		}											//if not comment
 		
 	}												//main while loop					
