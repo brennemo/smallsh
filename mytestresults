@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 3957
+PID: 6917
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -9,9 +9,7 @@ PID: 3957
 : 
 : --------------------
 : ls (10 points for returning dir contents)
-: badfile
-junk
-mytestresults
+: mytestresults
 p3testscript
 practice
 smallsh
@@ -20,8 +18,7 @@ smallsh.c
 : 
 : --------------------
 : ls out junk
-: ls: cannot access >: No such file or directory
-junk
+: source open(): Bad file descriptor
 : 
 : 
 : --------------------
@@ -30,13 +27,18 @@ junk
 : 
 : --------------------
 : wc in junk (15 points for returning correct numbers from wc)
-: source open(): Bad file descriptor
+: wc: <: No such file or directory
+0 0 0 junk
+0 0 0 total
 : 
 : 
 : --------------------
 : wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-: target open(): Bad file descriptor
-: cat: junk2: No such file or directory
+: wc: >: No such file or directory
+wc: >: No such file or directory
+: 0 0 0 junk2
+1 4 12 junk2
+1 4 12 total
 : 
 : 
 : --------------------
@@ -46,12 +48,12 @@ junk
 : 
 : --------------------
 : wc in badfile (10 points for returning text error)
-: source open(): Bad file descriptor
+: target open(): Bad file descriptor
 : 
 : 
 : --------------------
 : badfile (10 points for returning text error)
-: Could not find command.: Permission denied
+: Could not find command.: No such file or directory
 : 
 : 
 : --------------------
@@ -63,7 +65,7 @@ Try `sleep --help' for more information.
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 3951 - Operation not permitted
+: pkill: 6896 - Operation not permitted
 pkill: 13666 - Operation not permitted
 : 
 : 
@@ -101,8 +103,8 @@ Try `sleep --help' for more information.
 : /nfs/stak/students/b/brennemo/testdir
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-: : Fri Mar  3 11:05:29 PST 2017
+: : Fri Mar  3 11:26:45 PST 2017
 : sleep: invalid time interval `&'
 Try `sleep --help' for more information.
-: Fri Mar  3 11:05:29 PST 2017
+: Fri Mar  3 11:26:45 PST 2017
 : : 

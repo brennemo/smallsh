@@ -204,7 +204,7 @@ int main() {
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
-						printf("Input file: %s\n", inputFile);
+						//printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);
 						inputResult = dup2(sourceFD, 0);
@@ -213,7 +213,7 @@ int main() {
 					}
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						printf("Output file: %s\n", outputFile);
+						//printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 						outputResult = dup2(sourceFD, 1);
