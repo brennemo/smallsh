@@ -191,6 +191,23 @@ int main() {
 					*/
 				}
 
+				/*
+				if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
+					outputFile = args[outputIndex + 1];
+					printf("Output file: %s\n", outputFile);
+
+					for (i = outputIndex; i < numArgs - 2; i++) {
+						args[i] = args[i + 2];					//remove redirection symbol & filename
+					}
+
+					printf("After shifting:\n");
+					for (i = outputIndex; i < numArgs; i++) {
+						printf("%s\n");
+					}
+					printf("\n");
+				}
+				*/
+
 				//child process
 				pid_t childPid = -5;	int childExitMethod = -5;
 				childPid = fork();
@@ -228,7 +245,7 @@ int main() {
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						printf("Output file: %s\n", outputFile);
+						//printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);			
 						//printf("targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);\n");
@@ -237,15 +254,25 @@ int main() {
 						//printf("outputResult = dup2(targetFD, 1);\n");
 						if (outputResult == -1) { perror("dup2()"); exit(1); }
 						//printf("if (outputResult == -1) { perror(\"source open()\"); exit(1); }\n");
+						
+						for (i = outputIndex; i < numArgs; i++)
+							args[i] = args[i + 2];					//remove redirection symbol & filename
+
+						//printf("inside if:\n");
+						/*for (i = 0; i < numArgs; i++) {
+							printf("%s ", args[i]);
+						}
+						printf("\n");	*/
+						
+						
 						close(targetFD);			//warning: expected int, is char*
-						printf("close(targetFD);\n");
+						//printf("close(targetFD);\n");
 
-						/*
-						printf("TEST!!!\n");		//not reaching here 
+						
+						//printf("TEST!!!\n");		
+						
 
-						for (i = outputIndex; i < numArgs - 2; i++)
-							args[i] = args[i + 2];					//remove redirection symbol & filename 	
-						*/
+					
 					}
 					/*
 					//Remove symbol and file name from arguments list 
@@ -267,10 +294,13 @@ int main() {
 					*/
 
 					//test print 
+					/*
+					printf("outside of if:\n");
 					for (i = 0; i < numArgs; i++) {
 						printf("%s ", args[i]);
 					}
 					printf("\n");
+					*/
 
 
 				    

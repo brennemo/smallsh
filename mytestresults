@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 8383
+PID: 21900
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -20,28 +20,31 @@ smallsh.c
 : 
 : --------------------
 : ls out junk
-: ls: cannot access >: No such file or directory
-: 
+: : 
 : 
 : --------------------
 : cat junk (15 points for correctly returning contents of junk)
 : junk
+junk2
+mytestresults
+p3testscript
+practice
+smallsh
+smallsh.c
 : 
 : 
 : --------------------
 : wc in junk (15 points for returning correct numbers from wc)
 : wc: <: No such file or directory
-1 1 5 junk
-1 1 5 total
+ 7  7 65 junk
+ 7  7 65 total
 : 
 : 
 : --------------------
 : wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-: wc: >: No such file or directory
-wc: >: No such file or directory
-: 0 0 0 junk2
-1 4 12 junk2
-1 4 12 total
+: wc: <: No such file or directory
+:  7  7 65 junk
+ 7  7 65 total
 : 
 : 
 : --------------------
@@ -51,8 +54,9 @@ wc: >: No such file or directory
 : 
 : --------------------
 : wc in badfile (10 points for returning text error)
-: target open(): Bad file descriptor
+: source open(): No such file or directory
 Input file: badfile
+sourceFD = open(inputFile, O_RDONLY);
 : 
 : 
 : --------------------
@@ -69,8 +73,8 @@ Try `sleep --help' for more information.
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 8368 - Operation not permitted
-pkill: 13666 - Operation not permitted
+: pkill: 13666 - Operation not permitted
+pkill: 21839 - Operation not permitted
 : 
 : 
 : --------------------
@@ -107,8 +111,8 @@ Try `sleep --help' for more information.
 : /nfs/stak/students/b/brennemo/testdir
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-: : Fri Mar  3 11:35:37 PST 2017
+: : Fri Mar  3 13:24:10 PST 2017
 : sleep: invalid time interval `&'
 Try `sleep --help' for more information.
-: Fri Mar  3 11:35:37 PST 2017
+: Fri Mar  3 13:24:10 PST 2017
 : : 
