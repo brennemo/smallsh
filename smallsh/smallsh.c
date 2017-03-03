@@ -234,18 +234,37 @@ int main() {
 				
 				}
 
-
-				//printf("Redirecting stdin\n");
-
-				//printf("Redirecting stdout\n");
-
 				//exec command 
-				//printf("\n");
-					//expand $$ into process ID of shell itself 
+
+					//expand $$ into process ID of shell itself (done above)
 
 					//look for non-built in commands in PATH variable 
 				
 					//command not found - error message & set exit status to 1 
+
+				pid_t spawnPid = -5;	int childExitMethod = -5;
+				spawnPid = fork();
+
+				if (spawnPid == -1) {
+					perror("Hull breach!\n");
+					exit(1);
+				}
+				else if (spawnPid == 0) {
+					printf("CHILD: PID: %d, exiting!\n", spawnPid);
+					exit(0);
+				}
+
+				printf("PARENT: PID: %d, waiting...\n", spawnPid);
+				waitpid(spawnPid, &childExitMethod, 0);
+				printf("PARENT: Child process terminated, exiting!\n");
+
+				if (WIFEXITED(childExitMethod)) {
+					printf("The process exited normally\n");
+					int exitStatus = WEXITSTATUS(childExitMethod);
+					printf("exit status was %d\n", exitStatus);
+				}
+				else
+					printf("Child terminated by signal\n");
 
 				//clean up 
 			}										//if other command 
