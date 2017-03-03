@@ -66,12 +66,12 @@ int main() {
 				/*
 				** store index of input/output redirection symbols
 				*/
-				if (strcmp(ptr, ">") == 0) {				
+				if (strcmp(ptr, "<") == 0) {				
 					//printf("input!\n");
 					inputIndex = numArgs;
 				}
 
-				else if (strcmp(ptr, "<") == 0) {			
+				else if (strcmp(ptr, ">") == 0) {			
 					//printf("output!\n");
 					outputIndex = numArgs;
 				}
@@ -202,9 +202,9 @@ int main() {
 				else if (childPid == 0) {
 					//use dup2 to set up redirection
 					//Check for input and output files	and store names
-					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
+					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
-						//printf("Input file: %s\n", inputFile);
+						printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);
 						inputResult = dup2(sourceFD, 0);
@@ -213,7 +213,7 @@ int main() {
 					}
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						//printf("Output file: %s\n", outputFile);
+						printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 						outputResult = dup2(sourceFD, 1);
