@@ -207,9 +207,22 @@ int main() {
 						printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);
+						printf("sourceFD = open(inputFile, O_RDONLY);\n");
 						inputResult = dup2(sourceFD, 0);
+						printf("inputResult = dup2(sourceFD, 0);\n");
 						if (inputResult == -1) { perror("target open()"); exit(1); }
+						printf("if (inputResult == -1) { perror(\"target open()\"); exit(1); }\n");
 						close(sourceFD);		//warning: expected int, is char*
+						printf("close(sourceFD);\n");
+
+						/*
+						printf("TEST!!!\n");		//not reaching here 
+
+						for (i = inputIndex; i < numArgs - 2; i++) {
+							args[i] = args[i + 2];					//remove redirection symbol & filename 
+						}
+						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
+						*/
 					}
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
@@ -217,9 +230,20 @@ int main() {
 						printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+						printf("targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);\n");
 						outputResult = dup2(targetFD, 1);
+						printf("outputResult = dup2(targetFD, 1);\n");
 						if (outputResult == -1) { perror("source open()"); exit(1); }
+						printf("if (outputResult == -1) { perror(\"source open()\"); exit(1); }\n");
 						close(targetFD);			//warning: expected int, is char*
+						printf("close(targetFD);\n");
+
+						/*
+						printf("TEST!!!\n");		//not reaching here 
+
+						for (i = outputIndex; i < numArgs - 2; i++)
+							args[i] = args[i + 2];					//remove redirection symbol & filename 	
+						*/
 					}
 					/*
 					//Remove symbol and file name from arguments list 
