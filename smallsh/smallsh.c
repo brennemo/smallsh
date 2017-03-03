@@ -204,42 +204,57 @@ int main() {
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
-						//printf("Input file: %s\n", inputFile);
+						printf("Input file: %s\n", inputFile);
 
 						sourceFD = open(inputFile, O_RDONLY);
 						inputResult = dup2(sourceFD, 0);
 						if (inputResult == -1) { perror("target open()"); exit(1); }
 						close(sourceFD);		//warning: expected int, is char*
 					}
+
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						//printf("Output file: %s\n", outputFile);
+						printf("Output file: %s\n", outputFile);
 
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-						outputResult = dup2(sourceFD, 1);
+						outputResult = dup2(targetFD, 1);
 						if (outputResult == -1) { perror("source open()"); exit(1); }
 						close(targetFD);			//warning: expected int, is char*
 					}
-
+					/*
 					//Remove symbol and file name from arguments list 
-					if (inputIndex >= 0 && inputIndex < numArgs - 1) {
+					//if (inputIndex >= 0 && inputIndex < numArgs - 1) {
+					if (inputFile != NULL) {
 						for (i = inputIndex; i < numArgs - 2; i++) {
 							args[i] = args[i + 2];					//remove redirection symbol & filename 
 						}
 						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
+					
 					}
 
-					if (outputIndex >= 0 && outputIndex < numArgs - 1) {
+
+					//if (outputIndex >= 0 && outputIndex < numArgs - 1) {
+					if (outputFile != NULL) {
 						for (i = outputIndex; i < numArgs - 2; i++)
 							args[i] = args[i + 2];					//remove redirection symbol & filename 	
 					}
+					*/
 
+					//test print 
+					for (i = 0; i < numArgs; i++) {
+						printf("%s ", args[i]);
+					}
+					printf("\n");
+
+
+				    
 					//new process to execute command
 					if (execvp(args[0], args) < 0) {
 						perror("Could not find command.");
 						shellStatus = 1;		//?
 						exit(1);
 					}
+					
 
 					//printf("CHILD: PID: %d, exiting!\n", childPid);
 					exit(0);

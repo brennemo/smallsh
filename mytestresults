@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 6917
+PID: 8383
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -9,7 +9,9 @@ PID: 6917
 : 
 : --------------------
 : ls (10 points for returning dir contents)
-: mytestresults
+: junk
+junk2
+mytestresults
 p3testscript
 practice
 smallsh
@@ -18,18 +20,19 @@ smallsh.c
 : 
 : --------------------
 : ls out junk
-: source open(): Bad file descriptor
+: ls: cannot access >: No such file or directory
 : 
 : 
 : --------------------
 : cat junk (15 points for correctly returning contents of junk)
-: : 
+: junk
+: 
 : 
 : --------------------
 : wc in junk (15 points for returning correct numbers from wc)
 : wc: <: No such file or directory
-0 0 0 junk
-0 0 0 total
+1 1 5 junk
+1 1 5 total
 : 
 : 
 : --------------------
@@ -49,6 +52,7 @@ wc: >: No such file or directory
 : --------------------
 : wc in badfile (10 points for returning text error)
 : target open(): Bad file descriptor
+Input file: badfile
 : 
 : 
 : --------------------
@@ -65,7 +69,7 @@ Try `sleep --help' for more information.
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 6896 - Operation not permitted
+: pkill: 8368 - Operation not permitted
 pkill: 13666 - Operation not permitted
 : 
 : 
@@ -103,8 +107,8 @@ Try `sleep --help' for more information.
 : /nfs/stak/students/b/brennemo/testdir
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-: : Fri Mar  3 11:26:45 PST 2017
+: : Fri Mar  3 11:35:37 PST 2017
 : sleep: invalid time interval `&'
 Try `sleep --help' for more information.
-: Fri Mar  3 11:26:45 PST 2017
+: Fri Mar  3 11:35:37 PST 2017
 : : 
