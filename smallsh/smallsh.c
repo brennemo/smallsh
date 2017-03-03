@@ -252,64 +252,13 @@ int main() {
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 						outputFile = args[outputIndex + 1];
-						//printf("Output file: %s\n", outputFile);
-
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);			
-						//printf("targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);\n");
 						if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
 						outputResult = dup2(targetFD, 1);								//ERROR HERE
-						//printf("outputResult = dup2(targetFD, 1);\n");
 						if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						//printf("if (outputResult == -1) { perror(\"source open()\"); exit(1); }\n");
-						
-						//for (i = outputIndex; i < numArgs; i++)
-						//	args[i] = args[i + 2];					//remove redirection symbol & filename
-
-						//printf("inside if:\n");
-						/*for (i = 0; i < numArgs; i++) {
-							printf("%s ", args[i]);
-						}
-						printf("\n");	*/
-						
-						
 						close(targetFD);			//warning: expected int, is char*
-						//printf("close(targetFD);\n");
-
-						
-						//printf("TEST!!!\n");		
-						
-
+					}
 					
-					}
-					/*
-					//Remove symbol and file name from arguments list 
-					//if (inputIndex >= 0 && inputIndex < numArgs - 1) {
-					if (inputFile != NULL) {
-						for (i = inputIndex; i < numArgs - 2; i++) {
-							args[i] = args[i + 2];					//remove redirection symbol & filename 
-						}
-						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
-					
-					}
-
-
-					//if (outputIndex >= 0 && outputIndex < numArgs - 1) {
-					if (outputFile != NULL) {
-						for (i = outputIndex; i < numArgs - 2; i++)
-							args[i] = args[i + 2];					//remove redirection symbol & filename 	
-					}
-					*/
-
-					//test print 
-					/*
-					printf("outside of if:\n");
-					for (i = 0; i < numArgs; i++) {
-						printf("%s ", args[i]);
-					}
-					printf("\n");													 
-					*/
-
-
 				    
 					//new process to execute command
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
