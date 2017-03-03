@@ -206,11 +206,12 @@ int main() {
 						inputFile = args[inputIndex + 1];
 						printf("Input file: %s\n", inputFile);
 
-						sourceFD = open(inputFile, O_RDONLY);
+						sourceFD = open(inputFile, O_RDONLY);							
 						printf("sourceFD = open(inputFile, O_RDONLY);\n");
-						inputResult = dup2(sourceFD, 0);
+						if (sourceFD == -1) { perror("source open()"); exit(1); }
+						inputResult = dup2(sourceFD, 0);						//ERROR HERE
 						printf("inputResult = dup2(sourceFD, 0);\n");
-						if (inputResult == -1) { perror("target open()"); exit(1); }
+						if (inputResult == -1) { perror("dup2()"); exit(1); }
 						printf("if (inputResult == -1) { perror(\"target open()\"); exit(1); }\n");
 						close(sourceFD);		//warning: expected int, is char*
 						printf("close(sourceFD);\n");
@@ -229,12 +230,13 @@ int main() {
 						outputFile = args[outputIndex + 1];
 						printf("Output file: %s\n", outputFile);
 
-						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-						printf("targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);\n");
-						outputResult = dup2(targetFD, 1);
-						printf("outputResult = dup2(targetFD, 1);\n");
-						if (outputResult == -1) { perror("source open()"); exit(1); }
-						printf("if (outputResult == -1) { perror(\"source open()\"); exit(1); }\n");
+						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);			
+						//printf("targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);\n");
+						if (targetFD == -1) { perror("target open()"); exit(1); }
+						outputResult = dup2(targetFD, 1);								//ERROR HERE
+						//printf("outputResult = dup2(targetFD, 1);\n");
+						if (outputResult == -1) { perror("dup2()"); exit(1); }
+						//printf("if (outputResult == -1) { perror(\"source open()\"); exit(1); }\n");
 						close(targetFD);			//warning: expected int, is char*
 						printf("close(targetFD);\n");
 
