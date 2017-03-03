@@ -1,5 +1,6 @@
 #include <sys/types.h>		//pid_t, etc. 
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +24,8 @@ int main() {
 	char *args[MAX_ARGS];
 	char pidBuffer[PID_BUFFER_SIZE];
 	char* argWithPid; 
+
+	int sourceFD, targetFD, inputResult, outputResult;
 
 	bool backgroundProcess; 
 	int numBgProcesses = 0;
@@ -113,8 +116,6 @@ int main() {
 					ptr = argWithPid;								//reassign ptr to updated string
 				}
 				
-
-
 				args[numArgs] = ptr;			//store command/argument in array 
 				ptr = strtok(NULL, " \n");
 				numArgs++;
@@ -169,7 +170,7 @@ int main() {
 
 			//Run other commands with fork(), exec(), and waitpid()
 			else {
-				printf("Other shell commands!\n");
+				//printf("Other shell commands!\n");
 
 				//check for background process - & at end of args 
 				if (strcmp(args[numArgs - 1], "&") == 0) {
@@ -179,16 +180,18 @@ int main() {
 					numBgProcesses++;
 
 					//test print
+					/*
 					printf("Background processes:\n");
 					for (i = 0; i < numBgProcesses; i++) {
 						printf("%d ", bgProcesses[i]);
 					}
 					printf("\n");
+					*/
 				}
 				
 
 				//spawn child process for i/o redirection
-				printf("Creating child process\n");
+				//printf("Creating child process\n");
 
 				//use dup2 to set up redirection
 
@@ -196,11 +199,25 @@ int main() {
 				if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
 					inputFile = args[inputIndex + 1];
 					printf("Input file: %s\n", inputFile);
+
+					sourceFD = open(inputFile, O_RDONLY);
+					inputResult = dup2(sourceFD, 0);
+					if (inputResult == -1) { perror("target open()"); exit(1); }	 
+					close(sourceFD);		//warning: expected int, is char*
 				}
 				if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
 					outputFile = args[outputIndex + 1];
 					printf("Output file: %s\n", outputFile);
+
+					targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+					outputResult = dup2(sourceFD, 1);
+					if (outputResult == -1) { perror("source open()"); exit(1); }
+					close(targetFD);			//warning: expected int, is char*
 				}
+
+				
+				
+
 
 				//Remove symbol and file name from arguments list 
 				if (inputIndex >= 0 && inputIndex < numArgs - 1) {
@@ -247,11 +264,11 @@ int main() {
 
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
-	printf("Foreground signal terminating.\n");
+	printf("\nForeground signal terminating.\n");
 }
 
 void catchSIGTSTP(int signo) {
-	printf("Entering foreground-only mode (& is now ignored)\n");
+	printf("\nEntering foreground-only mode (& is now ignored)\n");
 
-	printf("Exiting foreground-only mode\n");
+	printf("\nExiting foreground-only mode\n");
 }
