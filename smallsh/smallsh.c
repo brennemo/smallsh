@@ -26,6 +26,8 @@ int main() {
 	char* argWithPid; 
 
 	int sourceFD, targetFD, inputResult, outputResult;
+	pid_t childPid;	
+	int childExitMethod;
 
 	bool backgroundProcess; 
 	int numBgProcesses = 0;
@@ -193,69 +195,68 @@ int main() {
 				//spawn child process for i/o redirection
 				//printf("Creating child process\n");
 
-				//use dup2 to set up redirection
-
-				//Check for input and output files	and store names
-				if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
-					inputFile = args[inputIndex + 1];
-					printf("Input file: %s\n", inputFile);
-
-					sourceFD = open(inputFile, O_RDONLY);
-					inputResult = dup2(sourceFD, 0);
-					if (inputResult == -1) { perror("target open()"); exit(1); }	 
-					close(sourceFD);		//warning: expected int, is char*
-				}
-				if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
-					outputFile = args[outputIndex + 1];
-					printf("Output file: %s\n", outputFile);
-
-					targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-					outputResult = dup2(sourceFD, 1);
-					if (outputResult == -1) { perror("source open()"); exit(1); }
-					close(targetFD);			//warning: expected int, is char*
-				}
-
-				
-				
-
-
-				//Remove symbol and file name from arguments list 
-				if (inputIndex >= 0 && inputIndex < numArgs - 1) {
-					for (i = inputIndex; i < numArgs - 2; i++) {
-						args[i] = args[i + 2];					//remove redirection symbol & filename 
-					}
-				
-					numArgs -= 2;	outputIndex -= 2;				//adjust indices 
-				}
-
-				if (outputIndex >= 0 && outputIndex < numArgs - 1) {
-					for (i = outputIndex; i < numArgs - 2; i++) 
-						args[i] = args[i + 2];					//remove redirection symbol & filename 	
-				
-				}
-
-				//exec command 
-
 					//expand $$ into process ID of shell itself (done above)
 
 					//look for non-built in commands in PATH variable 
 				
 					//command not found - error message & set exit status to 1 
 
-				pid_t spawnPid = -5;	int childExitMethod = -5;
-				spawnPid = fork();
+				//child process
+				pid_t childPid = -5;	int childExitMethod = -5;
+				childPid = fork();
 
-				if (spawnPid == -1) {
+				if (childPid == -1) {
 					perror("Hull breach!\n");
 					exit(1);
 				}
-				else if (spawnPid == 0) {
-					printf("CHILD: PID: %d, exiting!\n", spawnPid);
+				else if (childPid == 0) {
+					//use dup2 to set up redirection
+					//Check for input and output files	and store names
+					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '>' within bounds 
+						inputFile = args[inputIndex + 1];
+						printf("Input file: %s\n", inputFile);
+
+						sourceFD = open(inputFile, O_RDONLY);
+						inputResult = dup2(sourceFD, 0);
+						if (inputResult == -1) { perror("target open()"); exit(1); }
+						close(sourceFD);		//warning: expected int, is char*
+					}
+					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
+						outputFile = args[outputIndex + 1];
+						printf("Output file: %s\n", outputFile);
+
+						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+						outputResult = dup2(sourceFD, 1);
+						if (outputResult == -1) { perror("source open()"); exit(1); }
+						close(targetFD);			//warning: expected int, is char*
+					}
+
+					//Remove symbol and file name from arguments list 
+					if (inputIndex >= 0 && inputIndex < numArgs - 1) {
+						for (i = inputIndex; i < numArgs - 2; i++) {
+							args[i] = args[i + 2];					//remove redirection symbol & filename 
+						}
+						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
+					}
+
+					if (outputIndex >= 0 && outputIndex < numArgs - 1) {
+						for (i = outputIndex; i < numArgs - 2; i++)
+							args[i] = args[i + 2];					//remove redirection symbol & filename 	
+					}
+
+					//new process to execute command
+					if (execvp(args[0], args) < 0) {
+						perror("Could not find command.");
+						//shellStatus = 1;		//?
+						exit(1);
+					}
+
+					printf("CHILD: PID: %d, exiting!\n", childPid);
 					exit(0);
 				}
 
-				printf("PARENT: PID: %d, waiting...\n", spawnPid);
-				waitpid(spawnPid, &childExitMethod, 0);
+				printf("PARENT: PID: %d, waiting...\n", childPid);
+				waitpid(childPid, &childExitMethod, 0);
 				printf("PARENT: Child process terminated, exiting!\n");
 
 				if (WIFEXITED(childExitMethod)) {
