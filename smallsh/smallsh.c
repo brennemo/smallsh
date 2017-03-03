@@ -192,23 +192,6 @@ int main() {
 					*/
 				}
 
-				/*
-				if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
-					outputFile = args[outputIndex + 1];
-					printf("Output file: %s\n", outputFile);
-
-					for (i = outputIndex; i < numArgs - 2; i++) {
-						args[i] = args[i + 2];					//remove redirection symbol & filename
-					}
-
-					printf("After shifting:\n");
-					for (i = outputIndex; i < numArgs; i++) {
-						printf("%s\n");
-					}
-					printf("\n");
-				}
-				*/
-
 				//child process
 				pid_t childPid = -5;	int childExitMethod = -5;
 				childPid = fork();
@@ -222,32 +205,12 @@ int main() {
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
-						//printf("Input file: %s\n", inputFile);
-
 						sourceFD = open(inputFile, O_RDONLY);							
-						//printf("sourceFD = open(inputFile, O_RDONLY);\n");
 						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }
 						inputResult = dup2(sourceFD, 0);						//ERROR HERE
-						//printf("inputResult = dup2(sourceFD, 0);\n");
 						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						//printf("if (inputResult == -1) { perror(\"target open()\"); exit(1); }\n");
 						close(sourceFD);		//warning: expected int, is char*
-						//printf("close(sourceFD);\n");
-
-						
-						//printf("TEST!!!\n");		//not reaching here 
-						/*
-						for (i = inputIndex; i < numArgs - 2; i++) {
-							args[i] = args[i + 2];					//remove redirection symbol & filename 
-						}
-						numArgs -= 2;	outputIndex -= 2;				//adjust indices 
-
-						for (i = 0; i < numArgs; i++) {
-							printf("%s ", args[i]);
-						}
-						printf("\n");
-						*/
-						
+	
 					}
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
