@@ -1,5 +1,6 @@
 #include <sys/types.h>		//pid_t, etc. 
 #include <unistd.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,13 +10,15 @@
 #define MAX_ARGS 512
 #define PID_BUFFER_SIZE 50
 
+void catchSIGINT(int signo);
+void catchSIGTSTP(int signo);
+
 int main() {
 	int shellStatus = 0;
 	char commandLine[MAX_CHAR];						
 	char *ptr, *inputFile, *outputFile;				
 	int i, j;
-	int numArgs;
-	int inputIndex, outputIndex, pidIndex; 
+	int numArgs, inputIndex, outputIndex, pidIndex; 
 	int pid, pidLen, lenWithPid;
 	char *args[MAX_ARGS];
 	char pidBuffer[PID_BUFFER_SIZE];
@@ -24,6 +27,20 @@ int main() {
 	bool backgroundProcess; 
 	int numBgProcesses = 0;
 	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
+
+	//initialize sigaction structs, and block actions  
+	struct sigaction SIGINT_action = { 0 }, SIGTSTP_action = { 0 };
+
+	SIGINT_action.sa_handler = catchSIGINT;
+	sigfillset(&SIGINT_action.sa_mask);
+	SIGINT_action.sa_flags = 0; 
+
+	SIGTSTP_action.sa_handler = catchSIGTSTP;
+	sigfillset(&SIGTSTP_action.sa_mask);
+	SIGTSTP_action.sa_flags = 0;
+
+	sigaction(SIGINT, &SIGINT_action, NULL);
+	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 
 	while (1) {				    
 		numArgs = 0; 
@@ -226,5 +243,15 @@ int main() {
 		free(argWithPid);
 
 	return 0;
+}	
 
-}		
+void catchSIGINT(int signo) {
+	//foreground signal terminates self
+	printf("Foreground signal terminating.\n");
+}
+
+void catchSIGTSTP(int signo) {
+	printf("Entering foreground-only mode (& is now ignored)\n");
+
+	printf("Exiting foreground-only mode\n");
+}
