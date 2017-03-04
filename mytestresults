@@ -1,11 +1,10 @@
 Pre-script Info
-PID: 6871
+PID: 7297
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
 : Using comment (5 points if only next prompt is displayed next)
-: Could not find command.: No such file or directory
-: 
+: #THIS: no such file or directory: 
 : 
 : --------------------
 : ls (10 points for returning dir contents)
@@ -55,24 +54,24 @@ smallsh.c
 : 
 : --------------------
 : badfile (10 points for returning text error)
-: Could not find command.: No such file or directory
-: 
+: badfile: no such file or directory: 
 : 
 : --------------------
 : sleep 100 background (10 points for returning process ID of sleeper)
-: background pid is 6923
+: background pid is 7350
 : 
 : 
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 6844 - Operation not permitted
+: pkill: 7224 - Operation not permitted
+pkill: 7295 - Operation not permitted
 pkill: 13666 - Operation not permitted
 : 
 : 
 : --------------------
 : sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-: background pid is 6934
+: background pid is 7361
 : : 
 : 
 : --------------------
@@ -105,8 +104,8 @@ pkill: 13666 - Operation not permitted
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 : 
 Entering foreground-only mode (& is now ignored)
-: Sat Mar  4 10:49:14 PST 2017
-: : Sat Mar  4 10:49:19 PST 2017
+: Sat Mar  4 10:54:09 PST 2017
+: : Sat Mar  4 10:54:14 PST 2017
 : 
 Exiting foreground-only mode
 : 
