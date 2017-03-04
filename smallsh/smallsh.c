@@ -18,13 +18,16 @@
 #define MAX_ARGS 512
 #define PID_BUFFER_SIZE 50
 
+int shellStatus = 0;
 int foregroundOnly = 0;
+
+int numBgProcesses = 0;
+int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
 
 void catchSIGINT(int signo);
 void catchSIGTSTP(int signo);
 
 int main() {
-	int shellStatus = 0;
 	char commandLine[MAX_CHAR];						
 	char *ptr, *inputFile, *outputFile;				
 	int i, j;
@@ -41,8 +44,6 @@ int main() {
 	int childExitMethod, bgProcessIndex;
 
 	bool isBackgroundProcess; 
-	int numBgProcesses = 0;
-	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
 
 	//initialize sigaction structs, and block actions  
 	struct sigaction SIGINT_action = { 0 }, SIGTSTP_action = { 0 };
@@ -58,7 +59,11 @@ int main() {
 	sigaction(SIGINT, &SIGINT_action, NULL);
 	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 
-	while (1) {				    
+	while (1) {	
+		for (i = 0; i < numBgProcesses; i++) {
+			printf("%d ", bgProcesses[i]);
+		}
+
 		numArgs = 0; 
 		inputIndex = outputIndex = pidIndex = -1;
 		isBackgroundProcess = false;
@@ -171,7 +176,7 @@ int main() {
 			}
 			else if (strcmp(args[0], "status") == 0) {
 				//print exit status or...
-				if (WIFEXITED(0)) {
+				if (WIFEXITED(shellStatus)) {
 					printf("exit value %d\n", WEXITSTATUS(shellStatus));
 					fflush(stdout);
 				}
@@ -226,6 +231,12 @@ int main() {
 					exit(1);
 				}
 				else if (childPid == 0) {
+					if (isBackgroundProcess == true) {
+						bgProcesses[numBgProcesses] = childPid;
+						numBgProcesses++;
+						printf("added bg process %d\n", childPid);
+					}
+
 					//use dup2 to set up redirection
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
@@ -279,42 +290,50 @@ int main() {
 					//new process to execute command
 					//execute bg process 
 					if (isBackgroundProcess == true) {
-						if (execvp(filteredArgs[0], filteredArgs) < 0) {
-							perror("Could not find command.");
-							shellStatus = 1;		//?
-							exit(1);
-						}
-
 						//add bg pid to array
+						/*
 						bgProcesses[numBgProcesses] = childPid;
 						numBgProcesses++;
+						printf("added bg process %d\n", childPid);
+						*/
+
+						//if (execvp(filteredArgs[0], filteredArgs) < 0) {
+						execvp(filteredArgs[0], filteredArgs);
+						//perror("Could not find command.");
+						printf("Could not find command\n");
+						fflush(stdout);
+						shellStatus = 1;		//?
+						exit(1);
+						
 					}
 					//execute command with i/o arguments 
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
 						ioArg[0] = args[0];
 
-						if (execvp(args[0], ioArg) < 0) {
-							//perror("Could not find command.");
-							printf("%s: no such file or directory", args[0]);
-							fflush(stdout);
-							shellStatus = 1;		//?
-							exit(1);
-						}
+						//if (execvp(args[0], ioArg) < 0) {
+						execvp(args[0], ioArg);
+						//perror("Could not find command.");
+						shellStatus = 1;
+						printf("%s: no such file or directory\n", args[0]);
+						fflush(stdout);
+						exit(1);
+						
 					}
 					//execute normal command 
 					else {
 						//if ((args[0][0] != '#') && (execvp(args[0], args) < 0)) {
-						if (execvp(args[0], args) < 0) {
-							//perror("Could not find command.");
-							printf("%s: no such file or directory", args[0]);
-							fflush(stdout);
-							shellStatus = 1;		//?
-							exit(1);
-						}
+						//if (execvp(args[0], args) < 0) {
+						execvp(args[0], args);
+						//perror("Could not find command.");
+						shellStatus = 1;
+						printf("%s: no such file or directory\n", args[0]);
+						fflush(stdout);	
+						exit(1);
+					
 					}
 
-					exit(0);
-				}
+					//exit(0);
+				}	//else if (childPid == 0)
 				//immediately wait for foreground processes
 				if (isBackgroundProcess == false || foregroundOnly != 0) {
 					waitpid(childPid, &childExitMethod, 0);
@@ -334,12 +353,14 @@ int main() {
 				//clean up 
 			}										//if other command 
 		}											//if not comment
-		
+
+		//printf("\n"); 
 	}												//main while loop					
 	if (argWithPid != NULL)
 		free(argWithPid);
 
 	//check for terminating bg processe before next prompt 
+	/*
 	childPid = waitpid(-1, &childExitMethod, WNOHANG); 
 	while (childPid > 0) {
 		//if exit
@@ -355,14 +376,10 @@ int main() {
 
 		childPid = waitpid(-1, &childExitMethod, WNOHANG);
 	}
+	*/
 	
 	
-	for (i = 0; i < numBgProcesses; i++) {
-		if (childPid = bgProcesses[i]) {
-			bgProcessIndex = i;
-			break;
-		}
-	}	 
+	 
 	
 
 	return 0;
