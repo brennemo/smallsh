@@ -11,6 +11,8 @@
 #define MAX_ARGS 512
 #define PID_BUFFER_SIZE 50
 
+int foregroundOnly = 0;
+
 void catchSIGINT(int signo);
 void catchSIGTSTP(int signo);
 
@@ -321,10 +323,19 @@ int main() {
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
 	//printf("\nForeground signal terminating.\n");
+
+	//kill child processes
 }
 
 void catchSIGTSTP(int signo) {
-	//printf("\nEntering foreground-only mode (& is now ignored)\n");
+	if (foregroundOnly == 0) {
+		printf("\nEntering foreground-only mode (& is now ignored)\n");
+		foregroundOnly = 1; 
+	}
 
-	//printf("\nExiting foreground-only mode\n");
+	else {
+		printf("\nExiting foreground-only mode\n");
+		foregroundOnly = 0; 
+	}
+	
 }
