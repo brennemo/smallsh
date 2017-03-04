@@ -179,8 +179,6 @@ int main() {
 				
 				if (strcmp(args[numArgs - 1], "&") == 0) {
 					isBackgroundProcess = true; 
-					args[numArgs - 1] = NULL;
-					numArgs--; 
 				}
 				/*
 					//printf("Background process!\n");
@@ -232,16 +230,16 @@ int main() {
 
 					//for bg processes: if no input specified, redirect from dev/null
 					if (isBackgroundProcess == true && inputFile != NULL) {
-						inputFile = "dev/null";
+						inputFile = "/dev/null";
 						sourceFD = open(inputFile, O_RDONLY);
-						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }
+						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }   //error here 
 						inputResult = dup2(sourceFD, 0);
-						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
+						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }	//error here 
 						close(sourceFD);
 					}
 
 					if (isBackgroundProcess == true && outputFile != NULL) {
-						outputFile = "dev/null";
+						outputFile = "/dev/null";
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 						if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
 						outputResult = dup2(targetFD, 1);
