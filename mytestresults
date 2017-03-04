@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 825
+PID: 17342
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -69,8 +69,8 @@ Try `sleep --help' for more information.
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 807 - Operation not permitted
-pkill: 13666 - Operation not permitted
+: pkill: 13666 - Operation not permitted
+pkill: 17328 - Operation not permitted
 : 
 : 
 : --------------------
@@ -107,8 +107,8 @@ Try `sleep --help' for more information.
 : /nfs/stak/students/b/brennemo/testdir
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-: : Fri Mar  3 14:11:50 PST 2017
+: : Fri Mar  3 16:11:56 PST 2017
 : sleep: invalid time interval `&'
 Try `sleep --help' for more information.
-: Fri Mar  3 14:11:50 PST 2017
+: Fri Mar  3 16:11:56 PST 2017
 : : 

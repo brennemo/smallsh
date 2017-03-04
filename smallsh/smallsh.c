@@ -28,9 +28,9 @@ int main() {
 	int sourceFD, targetFD, inputResult, outputResult;
 	char *ioArg[1];
 	pid_t childPid;	
-	int childExitMethod;
+	int childExitMethod, bgProcessIndex;
 
-	bool backgroundProcess; 
+	bool isBackgroundProcess; 
 	int numBgProcesses = 0;
 	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
 
@@ -51,7 +51,7 @@ int main() {
 	while (1) {				    
 		numArgs = 0; 
 		inputIndex = outputIndex = pidIndex = -1;
-		backgroundProcess = false;
+		isBackgroundProcess = false;
 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
@@ -221,6 +221,15 @@ int main() {
 						if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
 						close(targetFD);			//warning: expected int, is char*
 					}
+
+					//for bg processes: if no input specified, redirect from dev/null
+					if (isBackgroundProcess == true && inputFile != NULL) {
+						inputFile = "dev/null";
+					}
+
+					if (isBackgroundProcess == true && outputFile != NULL) {
+						outputFile = "dev/null";
+					}
 					
 				    
 					//new process to execute command
@@ -241,23 +250,22 @@ int main() {
 						}
 					}
 
-					
-
-					//printf("CHILD: PID: %d, exiting!\n", childPid);
 					exit(0);
 				}
+				//immediately wait for foreground processes
+				if (isBackgroundProcess == false) {
+					waitpid(childPid, &childExitMethod, 0);
+				}
+				//add background processes to queue 
+				else {
+					//bgProcesses[numBgProcesses++] = childPid; 
+					printf("background pid is %d\n", childPid);
+				}
 
-				//printf("PARENT: PID: %d, waiting...\n", childPid);
-				waitpid(childPid, &childExitMethod, 0);
-				//printf("PARENT: Child process terminated, exiting!\n");
 
 				if (WIFEXITED(childExitMethod)) {
-					//printf("The process exited normally\n");
 					int exitStatus = WEXITSTATUS(childExitMethod);
-					//printf("exit status was %d\n", exitStatus);
 				}
-				//else
-					//printf("Child terminated by signal\n");
 
 				//clean up 
 			}										//if other command 
@@ -266,6 +274,30 @@ int main() {
 	}												//main while loop					
 	if (argWithPid != NULL)
 		free(argWithPid);
+
+	//check for terminating bg processe before next prompt 
+	childPid = wait(-1, &childExitMethod, WNOHANG); 
+	while (childPid > 0) {
+		//if exit
+		if (WIFEXITED(childExitMethod)) {
+			printf("background pid %d is done: exit value %d\n", childPid, WEXITSTATUS(childExitMethod));
+		}
+		//if signal
+		else if (WIFSIGNALED(childExitMethod)) {	
+			printf("background pid %d is done: terminated by signal %d\n", childPid, WTERMSIG(childExitMethod));
+		}
+
+		childPid = wait(-1, &childExitMethod, WNOHANG);
+	}
+	
+	/*
+	for (i = 0; i < numBgProcesses; i++) {
+		if (childPid = bgProcesses[i]) {
+			bgProcessIndex = i;
+			break;
+		}
+	}	 
+	*/
 
 	return 0;
 }	
