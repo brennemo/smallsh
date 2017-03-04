@@ -359,20 +359,23 @@ int main() {
 
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
-	//printf("\nForeground signal terminating.\n");
+	puts("\nForeground signal terminating.\n");				//cannot use printf in signal handlers
 
 	//kill child processes
 }
 
 void catchSIGTSTP(int signo) {
 	if (foregroundOnly == 0) {
-		printf("\nEntering foreground-only mode (& is now ignored)\n");
+		
+		//printf("\nEntering foreground-only mode (& is now ignored)\n");
+		puts("\nEntering foreground-only mode (& is now ignored)\n");	//cannot use printf in signal handlers
 		fflush(stdout);
 		foregroundOnly = 1; 
 	}
 
 	else {
-		printf("\nExiting foreground-only mode\n");
+		//printf("\nExiting foreground-only mode\n");
+		puts("\nExiting foreground-only mode\n");				//cannot use printf in signal handlers
 		fflush(stdout);
 		foregroundOnly = 0; 
 	}
