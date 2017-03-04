@@ -55,6 +55,8 @@ int main() {
 		inputIndex = outputIndex = pidIndex = -1;
 		isBackgroundProcess = false;
 
+		printf("Foreground mode: %d\n", foregroundOnly);
+
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
