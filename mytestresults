@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 12849
+PID: 13802
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -58,19 +58,19 @@ smallsh.c
 : 
 : --------------------
 : sleep 100 background (10 points for returning process ID of sleeper)
-: background pid is 12901
+: background pid is 13853
 : 
 : 
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
-: pkill: 12841 - Operation not permitted
-pkill: 13666 - Operation not permitted
+: pkill: 13666 - Operation not permitted
+pkill: 13792 - Operation not permitted
 : 
 : 
 : --------------------
 : sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-: background pid is 12912
+: background pid is 13864
 : : 
 : 
 : --------------------
@@ -104,8 +104,8 @@ pkill: 13666 - Operation not permitted
 : 
 Entering foreground-only mode (& is now ignored)
 
-: Sat Mar  4 11:47:33 PST 2017
-: : Sat Mar  4 11:47:38 PST 2017
+: Sat Mar  4 12:04:31 PST 2017
+: : Sat Mar  4 12:04:36 PST 2017
 : 
 Exiting foreground-only mode
 

@@ -284,6 +284,10 @@ int main() {
 							shellStatus = 1;		//?
 							exit(1);
 						}
+
+						//add bg pid to array
+						bgProcesses[numBgProcesses] = childPid;
+						numBgProcesses++;
 					}
 					//execute command with i/o arguments 
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
