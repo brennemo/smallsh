@@ -55,7 +55,7 @@ int main() {
 		inputIndex = outputIndex = pidIndex = -1;
 		isBackgroundProcess = false;
 
-		printf("Foreground mode: %d\n", foregroundOnly);
+		//printf("Foreground mode: %d\n", foregroundOnly);
 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
@@ -233,22 +233,24 @@ int main() {
 					}
 
 					//for bg processes: if no input specified, redirect from dev/null
-					if (isBackgroundProcess == true && inputFile != NULL) {
-						inputFile = "/dev/null";
-						sourceFD = open(inputFile, O_RDONLY);
-						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }   //error here 
-						inputResult = dup2(sourceFD, 0);
-						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }	//error here 
-						close(sourceFD);
-					}
+					if (foregroundOnly == 0) {
+						if (isBackgroundProcess == true && inputFile != NULL) {
+							inputFile = "/dev/null";
+							sourceFD = open(inputFile, O_RDONLY);
+							if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }   //error here 
+							inputResult = dup2(sourceFD, 0);
+							if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }	//error here 
+							close(sourceFD);
+						}
 
-					if (isBackgroundProcess == true && outputFile != NULL) {
-						outputFile = "/dev/null";
-						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-						if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
-						outputResult = dup2(targetFD, 1);
-						if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						close(targetFD);
+						if (isBackgroundProcess == true && outputFile != NULL) {
+							outputFile = "/dev/null";
+							targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+							if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
+							outputResult = dup2(targetFD, 1);
+							if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
+							close(targetFD);
+						}
 					}
 					
 				    
@@ -273,7 +275,7 @@ int main() {
 					exit(0);
 				}
 				//immediately wait for foreground processes
-				if (isBackgroundProcess == false) {
+				if (isBackgroundProcess == false || foregroundOnly != 0) {
 					waitpid(childPid, &childExitMethod, 0);
 				}
 				//add background processes to queue 
