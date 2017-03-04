@@ -222,10 +222,16 @@ int main() {
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
 						inputFile = args[inputIndex + 1];
 						sourceFD = open(inputFile, O_RDONLY);							
-						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }
-						inputResult = dup2(sourceFD, 0);						
-						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						close(sourceFD);		
+						if (sourceFD == -1) { 
+							printf("cannot open %s for input\n", inputFile); 
+							shellStatus = 1; 
+							exit(1);
+						}
+						else {
+							inputResult = dup2(sourceFD, 0);
+							if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
+							close(sourceFD);
+						}
 	
 					}
 
