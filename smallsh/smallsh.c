@@ -1,3 +1,10 @@
+/*
+** smallsh.c  
+** Morgan Brenner
+** CS 344 Program 3 
+** 03/05/2017 
+*/
+
 #include <sys/types.h>		//pid_t, etc. 
 #include <unistd.h>
 #include <fcntl.h>
@@ -24,7 +31,7 @@ int main() {
 	int numArgs, inputIndex, outputIndex, pidIndex; 
 	int pid, pidLen, lenWithPid;
 	char *args[MAX_ARGS];
-	char *filteredArgs[MAX_ARGS];				//holds arguments minus <, >, and & 
+	char *filteredArgs[MAX_ARGS];				//holds arguments & 
 	char pidBuffer[PID_BUFFER_SIZE];
 	char* argWithPid; 
 
@@ -342,7 +349,7 @@ int main() {
 			fflush(stdout);
 		}
 
-		childPid = wait(-1, &childExitMethod, WNOHANG);
+		childPid = waitpid(-1, &childExitMethod, WNOHANG);
 	}
 	
 	/*
@@ -360,21 +367,19 @@ int main() {
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
 	puts("\nForeground signal terminating.\n");				//cannot use printf in signal handlers
+	waitpid(signo);
 
 	//kill child processes
 }
 
 void catchSIGTSTP(int signo) {
 	if (foregroundOnly == 0) {
-		
-		//printf("\nEntering foreground-only mode (& is now ignored)\n");
 		puts("\nEntering foreground-only mode (& is now ignored)\n");	//cannot use printf in signal handlers
 		fflush(stdout);
 		foregroundOnly = 1; 
 	}
 
 	else {
-		//printf("\nExiting foreground-only mode\n");
 		puts("\nExiting foreground-only mode\n");				//cannot use printf in signal handlers
 		fflush(stdout);
 		foregroundOnly = 0; 
