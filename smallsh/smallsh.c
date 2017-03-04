@@ -56,8 +56,7 @@ int main() {
 		inputIndex = outputIndex = pidIndex = -1;
 		isBackgroundProcess = false;
 
-		//printf("Foreground mode: %d\n", foregroundOnly);
-
+		//printf("Foreground mode: %d\n", foregroundOnly); 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
@@ -167,11 +166,13 @@ int main() {
 				//print exit status or...
 				if (WIFEXITED(0)) {
 					printf("exit value %d\n", WEXITSTATUS(shellStatus));
+					fflush(stdout);
 				}
 
 				//print terminating signal of last foreground process 
 				else {
 					printf("terminated by signal %d\n", WTERMSIG(shellStatus));
+					fflush(stdout);
 				}
 				
 			}
@@ -225,6 +226,7 @@ int main() {
 						sourceFD = open(inputFile, O_RDONLY);							
 						if (sourceFD == -1) { 
 							printf("cannot open %s for input\n", inputFile); 
+							fflush(stdout);
 							shellStatus = 1; 
 							exit(1);
 						}
@@ -283,6 +285,7 @@ int main() {
 						if (execvp(args[0], ioArg) < 0) {
 							//perror("Could not find command.");
 							printf("%s: no such file or directory", args[0]);
+							fflush(stdout);
 							shellStatus = 1;		//?
 							exit(1);
 						}
@@ -293,6 +296,7 @@ int main() {
 						if (execvp(args[0], args) < 0) {
 							//perror("Could not find command.");
 							printf("%s: no such file or directory", args[0]);
+							fflush(stdout);
 							shellStatus = 1;		//?
 							exit(1);
 						}
@@ -308,6 +312,7 @@ int main() {
 				else {
 					//bgProcesses[numBgProcesses++] = childPid; 
 					printf("background pid is %d\n", childPid);
+					fflush(stdout);
 				}
 
 
@@ -329,10 +334,12 @@ int main() {
 		//if exit
 		if (WIFEXITED(childExitMethod)) {
 			printf("background pid %d is done: exit value %d\n", childPid, WEXITSTATUS(childExitMethod));
+			fflush(stdout);
 		}
 		//if signal
 		else if (WIFSIGNALED(childExitMethod)) {	
 			printf("background pid %d is done: terminated by signal %d\n", childPid, WTERMSIG(childExitMethod));
+			fflush(stdout);
 		}
 
 		childPid = wait(-1, &childExitMethod, WNOHANG);
@@ -360,11 +367,13 @@ void catchSIGINT(int signo) {
 void catchSIGTSTP(int signo) {
 	if (foregroundOnly == 0) {
 		printf("\nEntering foreground-only mode (& is now ignored)\n");
+		fflush(stdout);
 		foregroundOnly = 1; 
 	}
 
 	else {
 		printf("\nExiting foreground-only mode\n");
+		fflush(stdout);
 		foregroundOnly = 0; 
 	}
 	
