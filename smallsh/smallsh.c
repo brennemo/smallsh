@@ -24,6 +24,7 @@ int main() {
 	int numArgs, inputIndex, outputIndex, pidIndex; 
 	int pid, pidLen, lenWithPid;
 	char *args[MAX_ARGS];
+	char *filteredArgs[MAX_ARGS];				//holds arguments minus <, >, and & 
 	char pidBuffer[PID_BUFFER_SIZE];
 	char* argWithPid; 
 
@@ -183,6 +184,11 @@ int main() {
 				
 				if (strcmp(args[numArgs - 1], "&") == 0) {
 					isBackgroundProcess = true; 
+					
+					for (i = 0; i < numArgs - 1; i++) {
+						filteredArgs[i] = args[i];
+					}					 
+					numArgs--;
 				}
 				/*
 					//printf("Background process!\n");
@@ -255,6 +261,15 @@ int main() {
 					
 				    
 					//new process to execute command
+					//execute bg process 
+					if (isBackgroundProcess == true) {
+						if (execvp(filteredArgs[0], filteredArgs) < 0) {
+							perror("Could not find command.");
+							shellStatus = 1;		//?
+							exit(1);
+						}
+					}
+					//execute command with i/o arguments 
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
 						ioArg[0] = args[0];
 
@@ -264,6 +279,7 @@ int main() {
 							exit(1);
 						}
 					}
+					//execute normal command 
 					else {
 						if (execvp(args[0], args) < 0) {
 							perror("Could not find command.");
