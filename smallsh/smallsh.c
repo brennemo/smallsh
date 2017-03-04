@@ -65,7 +65,8 @@ int main() {
 		if (commandLine != NULL)
 			ptr = strtok(commandLine, " \n");			
 
-		if (ptr != NULL && strcmp(ptr, "#") != 0) {					//if line is not comment 
+		//if (ptr != NULL && strcmp(ptr, "#") != 0) {					//if line is not comment 
+		if (ptr != NULL && ptr[0] != '#') {					//if line is not comment 
 			while (ptr != NULL) {
 
 
@@ -288,7 +289,8 @@ int main() {
 					}
 					//execute normal command 
 					else {
-						if ((args[0][0] != '#') && (execvp(args[0], args) < 0)) {
+						//if ((args[0][0] != '#') && (execvp(args[0], args) < 0)) {
+						if (execvp(args[0], args) < 0) {
 							//perror("Could not find command.");
 							printf("%s: no such file or directory", args[0]);
 							shellStatus = 1;		//?
