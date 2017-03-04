@@ -18,16 +18,16 @@
 #define MAX_ARGS 512
 #define PID_BUFFER_SIZE 50
 
-int shellStatus = 0;
+
 int foregroundOnly = 0;
 
-int numBgProcesses = 0;
-int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
+
 
 void catchSIGINT(int signo);
 void catchSIGTSTP(int signo);
 
 int main() {
+	int shellStatus = 0;
 	char commandLine[MAX_CHAR];						
 	char *ptr, *inputFile, *outputFile;				
 	int i, j;
@@ -41,9 +41,11 @@ int main() {
 	int sourceFD, targetFD, inputResult, outputResult;
 	char *ioArg[1];
 	pid_t childPid;	
-	int childExitMethod, bgProcessIndex;
+	int /*childExitMethod,*/ bgProcessIndex;
 
 	bool isBackgroundProcess; 
+	int numBgProcesses = 0;
+	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
 
 	//initialize sigaction structs, and block actions  
 	struct sigaction SIGINT_action = { 0 }, SIGTSTP_action = { 0 };
@@ -223,7 +225,7 @@ int main() {
 				*/
 
 				//child process
-				pid_t childPid = -5;	int childExitMethod = -5;
+				pid_t childPid = -5;	//int childExitMethod = -5;
 				childPid = fork();
 
 				if (childPid == -1) {
@@ -302,7 +304,7 @@ int main() {
 						//perror("Could not find command.");
 						printf("Could not find command\n");
 						fflush(stdout);
-						shellStatus = 1;		//?
+						//shellStatus = 1;		//?
 						exit(1);
 						
 					}
@@ -313,9 +315,9 @@ int main() {
 						//if (execvp(args[0], ioArg) < 0) {
 						execvp(args[0], ioArg);
 						//perror("Could not find command.");
-						shellStatus = 1;
 						printf("%s: no such file or directory\n", args[0]);
 						fflush(stdout);
+						//shellStatus = 1;
 						exit(1);
 						
 					}
@@ -325,9 +327,9 @@ int main() {
 						//if (execvp(args[0], args) < 0) {
 						execvp(args[0], args);
 						//perror("Could not find command.");
-						shellStatus = 1;
 						printf("%s: no such file or directory\n", args[0]);
 						fflush(stdout);	
+						//shellStatus = 1;
 						exit(1);
 					
 					}
@@ -336,7 +338,7 @@ int main() {
 				}	//else if (childPid == 0)
 				//immediately wait for foreground processes
 				if (isBackgroundProcess == false || foregroundOnly != 0) {
-					waitpid(childPid, &childExitMethod, 0);
+					waitpid(childPid, &shellStatus, 0);
 				}
 				//add background processes to queue 
 				else {
@@ -346,8 +348,8 @@ int main() {
 				}
 
 
-				if (WIFEXITED(childExitMethod)) {
-					int exitStatus = WEXITSTATUS(childExitMethod);
+				if (WIFEXITED(shellStatus)) {
+					int exitStatus = WEXITSTATUS(shellStatus);
 				}
 
 				//clean up 
