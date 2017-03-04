@@ -288,7 +288,7 @@ int main() {
 					}
 					//execute normal command 
 					else {
-						if (execvp(args[0], args) < 0) {
+						if ((args[0][0] != '#') && (execvp(args[0], args) < 0)) {
 							//perror("Could not find command.");
 							printf("%s: no such file or directory", args[0]);
 							shellStatus = 1;		//?
