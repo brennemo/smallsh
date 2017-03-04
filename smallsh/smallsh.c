@@ -336,7 +336,7 @@ int main() {
 		free(argWithPid);
 
 	//check for terminating bg processe before next prompt 
-	childPid = wait(-1, &childExitMethod, WNOHANG); 
+	childPid = waitpid(-1, &childExitMethod, WNOHANG); 
 	while (childPid > 0) {
 		//if exit
 		if (WIFEXITED(childExitMethod)) {
@@ -352,14 +352,14 @@ int main() {
 		childPid = waitpid(-1, &childExitMethod, WNOHANG);
 	}
 	
-	/*
+	
 	for (i = 0; i < numBgProcesses; i++) {
 		if (childPid = bgProcesses[i]) {
 			bgProcessIndex = i;
 			break;
 		}
 	}	 
-	*/
+	
 
 	return 0;
 }	
