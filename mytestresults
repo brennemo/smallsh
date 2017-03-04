@@ -1,5 +1,5 @@
 Pre-script Info
-PID: 17342
+PID: 19104
 : BEGINNING TEST SCRIPT
 : 
 : --------------------
@@ -62,22 +62,24 @@ dup2(): Bad file descriptor
 : 
 : --------------------
 : sleep 100 background (10 points for returning process ID of sleeper)
-: sleep: invalid time interval `&'
-Try `sleep --help' for more information.
+: background pid is 19156
 : 
+source open(): No such file or directory
+dup2(): Bad file descriptor
 : 
 : --------------------
 : pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 : (Ignore message about Operation Not Permitted)
 : pkill: 13666 - Operation not permitted
-pkill: 17328 - Operation not permitted
+pkill: 19084 - Operation not permitted
 : 
 : 
 : --------------------
 : sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-: sleep: invalid time interval `&'
-Try `sleep --help' for more information.
-: : 
+: background pid is 19167
+: source open(): No such file or directory
+dup2(): Bad file descriptor
+: 
 : 
 : --------------------
 : pwd
@@ -107,8 +109,9 @@ Try `sleep --help' for more information.
 : /nfs/stak/students/b/brennemo/testdir
 : --------------------
 : Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-: : Fri Mar  3 16:11:56 PST 2017
-: sleep: invalid time interval `&'
-Try `sleep --help' for more information.
-: Fri Mar  3 16:11:56 PST 2017
+: : Fri Mar  3 16:26:25 PST 2017
+: background pid is 19201
+: Fri Mar  3 16:26:25 PST 2017
+source open(): No such file or directory
+dup2(): Bad file descriptor
 : : 

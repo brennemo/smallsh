@@ -176,21 +176,29 @@ int main() {
 				//printf("Other shell commands!\n");
 
 				//check for background process - & at end of args 
+				
 				if (strcmp(args[numArgs - 1], "&") == 0) {
+					isBackgroundProcess = true; 
+					args[numArgs - 1] = NULL;
+					numArgs--; 
+				}
+				/*
 					//printf("Background process!\n");
 					int dummy_pid = getpid();				//placeholder for testing 
 					bgProcesses[numBgProcesses] = dummy_pid;
 					numBgProcesses++;
+					
 
 					//test print
-					/*
+					
 					printf("Background processes:\n");
 					for (i = 0; i < numBgProcesses; i++) {
 						printf("%d ", bgProcesses[i]);
 					}
 					printf("\n");
-					*/
+					
 				}
+				*/
 
 				//child process
 				pid_t childPid = -5;	int childExitMethod = -5;
@@ -207,9 +215,9 @@ int main() {
 						inputFile = args[inputIndex + 1];
 						sourceFD = open(inputFile, O_RDONLY);							
 						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }
-						inputResult = dup2(sourceFD, 0);						//ERROR HERE
+						inputResult = dup2(sourceFD, 0);						
 						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						close(sourceFD);		//warning: expected int, is char*
+						close(sourceFD);		
 	
 					}
 
@@ -217,18 +225,28 @@ int main() {
 						outputFile = args[outputIndex + 1];
 						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);			
 						if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
-						outputResult = dup2(targetFD, 1);								//ERROR HERE
+						outputResult = dup2(targetFD, 1);								
 						if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
-						close(targetFD);			//warning: expected int, is char*
+						close(targetFD);		
 					}
 
 					//for bg processes: if no input specified, redirect from dev/null
 					if (isBackgroundProcess == true && inputFile != NULL) {
 						inputFile = "dev/null";
+						sourceFD = open(inputFile, O_RDONLY);
+						if (sourceFD == -1) { perror("source open()"); shellStatus = 1; }
+						inputResult = dup2(sourceFD, 0);
+						if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
+						close(sourceFD);
 					}
 
 					if (isBackgroundProcess == true && outputFile != NULL) {
 						outputFile = "dev/null";
+						targetFD = open(outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+						if (targetFD == -1) { perror("target open()"); shellStatus = 1; }
+						outputResult = dup2(targetFD, 1);
+						if (outputResult == -1) { perror("dup2()"); shellStatus = 1; }
+						close(targetFD);
 					}
 					
 				    
