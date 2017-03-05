@@ -292,50 +292,29 @@ int main() {
 					//new process to execute command
 					//execute bg process 
 					if (isBackgroundProcess == true) {
-						//add bg pid to array
-						/*
-						bgProcesses[numBgProcesses] = childPid;
-						numBgProcesses++;
-						printf("added bg process %d\n", childPid);
-						*/
-
-						//if (execvp(filteredArgs[0], filteredArgs) < 0) {
 						execvp(filteredArgs[0], filteredArgs);
-						//perror("Could not find command.");
 						printf("Could not find command\n");
 						fflush(stdout);
-						//shellStatus = 1;		//?
 						exit(1);
 						
 					}
 					//execute command with i/o arguments 
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
-						ioArg[0] = args[0];
-
-						//if (execvp(args[0], ioArg) < 0) {
+						ioArg[0] = args[0];				//only take 1st argument (ignore args after > and <)
 						execvp(args[0], ioArg);
-						//perror("Could not find command.");
 						printf("%s: no such file or directory\n", args[0]);
 						fflush(stdout);
-						//shellStatus = 1;
 						exit(1);
 						
 					}
 					//execute normal command 
 					else {
-						//if ((args[0][0] != '#') && (execvp(args[0], args) < 0)) {
-						//if (execvp(args[0], args) < 0) {
 						execvp(args[0], args);
-						//perror("Could not find command.");
 						printf("%s: no such file or directory\n", args[0]);
 						fflush(stdout);	
-						//shellStatus = 1;
 						exit(1);
-					
 					}
-
-					//exit(0);
-				}	//else if (childPid == 0)
+				}										//else if (childPid == 0)
 				//immediately wait for foreground processes
 				if (isBackgroundProcess == false || foregroundOnly != 0) {
 					waitpid(childPid, &shellStatus, 0);
@@ -347,16 +326,12 @@ int main() {
 					fflush(stdout);
 				}
 
-
 				if (WIFEXITED(shellStatus)) {
 					int exitStatus = WEXITSTATUS(shellStatus);
 				}
-
-				//clean up 
 			}										//if other command 
 		}											//if not comment
 
-		//printf("\n"); 
 	}												//main while loop					
 	if (argWithPid != NULL)
 		free(argWithPid);
