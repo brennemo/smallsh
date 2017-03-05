@@ -60,14 +60,9 @@ int main() {
 	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 
 	while (1) {	
-		/*for (i = 0; i < numBgProcesses; i++) {
-			printf("%d ", bgProcesses[i]);
-			fflush(stdout);
-		}   */
-
 		numArgs = 0; 
 		inputIndex = outputIndex = pidIndex = -1;
-		isBackgroundProcess = false;
+		isBackgroundProcess = false;			//foreground process by default 
 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
@@ -80,7 +75,6 @@ int main() {
 			while (ptr != NULL) {
 				// store index of input/output redirection symbols
 				if (strcmp(ptr, "<") == 0) {				
-					//printf("input!\n");
 					inputIndex = numArgs;
 				}
 				else if (strcmp(ptr, ">") == 0) {			
@@ -134,13 +128,11 @@ int main() {
 				//kill remaining processes 
 				if (numBgProcesses > 0) {
 					for (i = 0; i < numBgProcesses; i++) {
-						//waitpid(bgProcesses[i], shellStatus, 0);
 						kill(bgProcesses[i], SIGKILL);
 						printf("Bg process terminated\n");
 						fflush(stdout);
 					}	
 				}
-				
 					exit(0);
 			}
 
@@ -187,23 +179,6 @@ int main() {
 					}					 
 					numArgs--;
 				}
-				/*
-					//printf("Background process!\n");
-					int dummy_pid = getpid();				//placeholder for testing 
-					bgProcesses[numBgProcesses] = dummy_pid;
-					numBgProcesses++;
-					
-
-					//test print
-					
-					printf("Background processes:\n");
-					for (i = 0; i < numBgProcesses; i++) {
-						printf("%d ", bgProcesses[i]);
-					}
-					printf("\n");
-					
-				}
-				*/
 
 				//start child process
 				pid_t childPid = -5;
@@ -214,13 +189,6 @@ int main() {
 					exit(1);
 				}
 				else if (childPid == 0) {
-					/*if (isBackgroundProcess == true) {
-						bgProcesses[numBgProcesses] = childPid;
-						numBgProcesses++;
-						printf("added bg process %d\n", childPid);
-						fflush(stdout);
-					}*/
-
 					//use dup2 to set up redirection
 					//Check for input and output files	and store names
 					if (inputIndex >= 0 && inputIndex < numArgs - 1) {	//there is a '<' within bounds 
@@ -237,7 +205,6 @@ int main() {
 							if (inputResult == -1) { perror("dup2()"); shellStatus = 1; }
 							close(sourceFD);
 						}
-	
 					}
 
 					if (outputIndex >= 0 && outputIndex < numArgs - 1) {	//there is a '>' within bounds 
@@ -277,7 +244,6 @@ int main() {
 						printf("Could not find command\n");
 						fflush(stdout);
 						exit(1);
-						
 					}
 					//execute command with i/o arguments 
 					if ((inputIndex >= 0) || (outputIndex >= 0)) {
@@ -285,8 +251,7 @@ int main() {
 						execvp(args[0], ioArg);
 						printf("%s: no such file or directory\n", args[0]);
 						fflush(stdout);
-						exit(1);
-						
+						exit(1);	
 					}
 					//execute normal command 
 					else {
@@ -312,10 +277,10 @@ int main() {
 				}
 
 				if (WIFEXITED(shellStatus)) {
-					WEXITSTATUS(shellStatus);
+					WEXITSTATUS(shellStatus);		//killed by exit
 				}
 				else {
-					WTERMSIG(shellStatus);
+					WTERMSIG(shellStatus);			//killed by signal 
 				}
 			}										//if other command 
 		}											//if not comment
@@ -335,7 +300,6 @@ int main() {
 				fflush(stdout);
 				numBgProcesses--;
 			}
-
 			childPid = waitpid(-1, &shellStatus, WNOHANG);	//look for next child 
 		}
 
@@ -346,14 +310,16 @@ int main() {
 	return 0;
 }	
 
+//^C will kill foreground process
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
 	puts("\nForeground signal terminating.\n");				//cannot use printf in signal handlers
-	
-	//kill child process
+	fflush(stdout);
+	//kill child process 
 	waitpid(signo);
 }
 
+//^Z will toggle foreground-only mode  
 void catchSIGTSTP(int signo) {
 	if (foregroundOnly == 0) {
 		puts("\nEntering foreground-only mode (& is now ignored)\n");	//cannot use printf in signal handlers
