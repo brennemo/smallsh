@@ -62,6 +62,7 @@ int main() {
 	while (1) {	
 		for (i = 0; i < numBgProcesses; i++) {
 			printf("%d ", bgProcesses[i]);
+			fflush(stdout);
 		}
 
 		numArgs = 0; 
@@ -130,6 +131,16 @@ int main() {
 			
 			//Check for built-in commands
 			if (strcmp(args[0], "exit") == 0) {
+				//kill remaining processes 
+				if (numBgProcesses > 0) {
+					for (i = 0; i < numBgProcesses; i++) {
+						//waitpid(bgProcesses[i], shellStatus, 0);
+						kill(bgProcesses[i], SIGKILL);
+						printf("Bg process terminated\n");
+						fflush(stdout);
+					}	
+				}
+				
 					exit(0);
 			}
 
@@ -306,34 +317,38 @@ int main() {
 			}										//if other command 
 		}											//if not comment
 
+		//check for terminating bg processe before next prompt 
+		childPid = waitpid(-1, &shellStatus, WNOHANG);
+		while (childPid > 0) {
+			//if exit
+			if (WIFEXITED(shellStatus)) {
+				printf("background pid %d is done: exit value %d\n", childPid, WEXITSTATUS(shellStatus));
+				fflush(stdout);
+				numBgProcesses--;
+			}
+			//if signal
+			else if (WIFSIGNALED(shellStatus)) {
+				printf("background pid %d is done: terminated by signal %d\n", childPid, WTERMSIG(shellStatus));
+				fflush(stdout);
+				numBgProcesses--;
+			}
+
+			childPid = waitpid(-1, &shellStatus, WNOHANG);
+		}
+
 	}												//main while loop					
 	if (argWithPid != NULL)
 		free(argWithPid);
 
 	//check for terminating bg processe before next prompt 
-	for (i = 0; i < numBgProcesses; i++) {
+	//for (i = 0; i < numBgProcesses; i++) {
 
-	}
+	//}
 
 
 
-	/*
-	childPid = waitpid(-1, &childExitMethod, WNOHANG); 
-	while (childPid > 0) {
-		//if exit
-		if (WIFEXITED(childExitMethod)) {
-			printf("background pid %d is done: exit value %d\n", childPid, WEXITSTATUS(childExitMethod));
-			fflush(stdout);
-		}
-		//if signal
-		else if (WIFSIGNALED(childExitMethod)) {	
-			printf("background pid %d is done: terminated by signal %d\n", childPid, WTERMSIG(childExitMethod));
-			fflush(stdout);
-		}
+	
 
-		childPid = waitpid(-1, &childExitMethod, WNOHANG);
-	}
-	*/
 	
 	
 	 
