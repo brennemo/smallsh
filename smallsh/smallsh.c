@@ -60,10 +60,10 @@ int main() {
 	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 
 	while (1) {	
-		for (i = 0; i < numBgProcesses; i++) {
+		/*for (i = 0; i < numBgProcesses; i++) {
 			printf("%d ", bgProcesses[i]);
 			fflush(stdout);
-		}
+		}   */
 
 		numArgs = 0; 
 		inputIndex = outputIndex = pidIndex = -1;
@@ -307,19 +307,22 @@ int main() {
 
 					bgProcesses[numBgProcesses] = childPid;
 					numBgProcesses++;
-					printf("added bg process #%d: %d\n", numBgProcesses, childPid);
+					//printf("added bg process #%d: %d\n", numBgProcesses, childPid);
 					fflush(stdout);
 				}
 
 				if (WIFEXITED(shellStatus)) {
-					int exitStatus = WEXITSTATUS(shellStatus);
+					WEXITSTATUS(shellStatus);
+				}
+				else {
+					WTERMSIG(shellStatus);
 				}
 			}										//if other command 
 		}											//if not comment
 
 		//check for terminating bg processe before next prompt 
-		childPid = waitpid(-1, &shellStatus, WNOHANG);
-		while (childPid > 0) {
+		childPid = waitpid(-1, &shellStatus, WNOHANG);	//look for a child 
+		while (childPid > 0) {						//a child still exists 
 			//if exit
 			if (WIFEXITED(shellStatus)) {
 				printf("background pid %d is done: exit value %d\n", childPid, WEXITSTATUS(shellStatus));
@@ -333,26 +336,12 @@ int main() {
 				numBgProcesses--;
 			}
 
-			childPid = waitpid(-1, &shellStatus, WNOHANG);
+			childPid = waitpid(-1, &shellStatus, WNOHANG);	//look for next child 
 		}
 
 	}												//main while loop					
 	if (argWithPid != NULL)
 		free(argWithPid);
-
-	//check for terminating bg processe before next prompt 
-	//for (i = 0; i < numBgProcesses; i++) {
-
-	//}
-
-
-
-	
-
-	
-	
-	 
-	
 
 	return 0;
 }	
