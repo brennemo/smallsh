@@ -18,10 +18,7 @@
 #define MAX_ARGS 512
 #define PID_BUFFER_SIZE 50
 
-
-int foregroundOnly = 0;
-
-
+int foregroundOnly = 0;							//for SIGTSTP 
 
 void catchSIGINT(int signo);
 void catchSIGTSTP(int signo);
@@ -31,25 +28,25 @@ int main() {
 	char commandLine[MAX_CHAR];						
 	char *ptr, *inputFile, *outputFile;				
 	int i, j;
-	int numArgs, inputIndex, outputIndex, pidIndex; 
-	int pid, pidLen, lenWithPid;
+	int numArgs, inputIndex, outputIndex, pidIndex;	//track special characters 
+	int pid, pidLen, lenWithPid;					//for replacing '$$' with pid
 	char *args[MAX_ARGS];
-	char *filteredArgs[MAX_ARGS];				//holds arguments & 
+	char *filteredArgs[MAX_ARGS];					//holds arguments minus '&' 
 	char pidBuffer[PID_BUFFER_SIZE];
-	char* argWithPid; 
+	char* argWithPid;							
 
 	int sourceFD, targetFD, inputResult, outputResult;
 	char *ioArg[1];
 	pid_t childPid;	
-	int /*childExitMethod,*/ bgProcessIndex;
 
 	bool isBackgroundProcess; 
 	int numBgProcesses = 0;
-	int bgProcesses[MAX_ARGS];		//store PIDs of non-completed processes 
+	int bgProcesses[MAX_ARGS];					//store PIDs of non-completed processes 
 
 	//initialize sigaction structs, and block actions  
 	struct sigaction SIGINT_action = { 0 }, SIGTSTP_action = { 0 };
 
+	//initialize signal handlers 
 	SIGINT_action.sa_handler = catchSIGINT;
 	sigfillset(&SIGINT_action.sa_mask);
 	SIGINT_action.sa_flags = 0; 
@@ -58,6 +55,7 @@ int main() {
 	sigfillset(&SIGTSTP_action.sa_mask);
 	SIGTSTP_action.sa_flags = 0;
 
+	//assign behaviors to override default actions 
 	sigaction(SIGINT, &SIGINT_action, NULL);
 	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 
@@ -70,41 +68,29 @@ int main() {
 		inputIndex = outputIndex = pidIndex = -1;
 		isBackgroundProcess = false;
 
-		//printf("Foreground mode: %d\n", foregroundOnly); 
 		printf(": ");						//use ': ' as prompt for each command line 
 		fflush(stdout);	fflush(stdin);		//flush input & output buffers immediately after each output 
 
 		fgets(commandLine, MAX_CHAR, stdin);
 		if (commandLine != NULL)
 			ptr = strtok(commandLine, " \n");			
-
-		//if (ptr != NULL && strcmp(ptr, "#") != 0) {					//if line is not comment 
-		if (ptr != NULL && ptr[0] != '#') {					//if line is not comment 
+ 
+		if (ptr != NULL && ptr[0] != '#') {	//if line is not comment 
 			while (ptr != NULL) {
-
-
-				/*
-				** store index of input/output redirection symbols
-				*/
+				// store index of input/output redirection symbols
 				if (strcmp(ptr, "<") == 0) {				
 					//printf("input!\n");
 					inputIndex = numArgs;
 				}
-
 				else if (strcmp(ptr, ">") == 0) {			
-					//printf("output!\n");
 					outputIndex = numArgs;
 				}
 
-				/*
-				** detect '$$' within string and expand $$ to pid of 
-				** shell (should work when adjacent to quotes like in 'echo "PID: $$"')
-				*/
-				
-				if (strlen(ptr) > 1) {				//string length must be > 1 to contain "$$" 
+				// detect '$$' within string and expand $$ to pid of 
+				// shell (should work when adjacent to quotes like in 'echo "PID: $$"')
+				if (strlen(ptr) > 1) {					//string length must be > 1 to contain "$$" 
 					for (i = 1; i < strlen(ptr); i++) {
 						if ((ptr[i - 1] == '$') && (ptr[i] == '$')) {
-							//printf("Going to expand $$ to pid!!\n");
 							pidIndex = i - 1; 
 							break;
 						}		
@@ -114,12 +100,9 @@ int main() {
 					pid = getpid();
 					snprintf(pidBuffer, PID_BUFFER_SIZE, "%d", pid);
 					pidLen = strlen(pidBuffer);						//get length of pid as string
-					//printf("Pid %d has length %d\n", pid, pidLen);
-
 					lenWithPid = strlen(pidBuffer) + strlen(ptr) - 2;		//new length with pid replacing $$ 
-					//printf("New string length: %d\n", lenWithPid);
 
-					argWithPid = malloc(lenWithPid * sizeof(char));		
+					argWithPid = malloc(lenWithPid * sizeof(char));			
 					memset(argWithPid, '\0', lenWithPid);
 
 					for (i = 0; i < pidIndex; i++) 
@@ -143,15 +126,7 @@ int main() {
 				numArgs++;
 			}								//while ptr != null
  
-			args[numArgs] = ptr;					//last argument 
-
-			/*
-			printf("# Arguments: %d\n", numArgs);
-			for (i = 0; i < numArgs; i++) {
-				printf("%s ", args[i]);
-			}
-			printf("\n");
-			*/
+			args[numArgs] = ptr;				//add last argument to args 
 			
 			//Check for built-in commands
 			if (strcmp(args[0], "exit") == 0) {
@@ -162,7 +137,6 @@ int main() {
 				if (numArgs == 1 || numArgs == 2)
 					//change to directory in HOME environment variable 
 					if (numArgs == 1) {
-						//printf("%s\n", args[0]);
 						if (chdir(getenv("HOME"))) {
 							perror("Cannot find HOME environment variable.\n");
 						}
@@ -170,7 +144,6 @@ int main() {
 
 				//change to directory specified in argument 
 					else {
-						//printf("%s %s\n", args[0], args[1]);
 						if (chdir(args[1])) {					
 							perror("Cannot find directory.\n");
 						}
@@ -194,10 +167,7 @@ int main() {
 
 			//Run other commands with fork(), exec(), and waitpid()
 			else {
-				//printf("Other shell commands!\n");
-
 				//check for background process - & at end of args 
-				
 				if (strcmp(args[numArgs - 1], "&") == 0) {
 					isBackgroundProcess = true; 
 					
@@ -224,8 +194,8 @@ int main() {
 				}
 				*/
 
-				//child process
-				pid_t childPid = -5;	//int childExitMethod = -5;
+				//start child process
+				pid_t childPid = -5;
 				childPid = fork();
 
 				if (childPid == -1) {
@@ -237,6 +207,7 @@ int main() {
 						bgProcesses[numBgProcesses] = childPid;
 						numBgProcesses++;
 						printf("added bg process %d\n", childPid);
+						fflush(stdout);
 					}
 
 					//use dup2 to set up redirection
@@ -287,7 +258,6 @@ int main() {
 							close(targetFD);
 						}
 					}
-					
 				    
 					//new process to execute command
 					//execute bg process 
@@ -321,7 +291,6 @@ int main() {
 				}
 				//add background processes to queue 
 				else {
-					//bgProcesses[numBgProcesses++] = childPid; 
 					printf("background pid is %d\n", childPid);
 					fflush(stdout);
 				}
