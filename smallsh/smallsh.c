@@ -203,12 +203,12 @@ int main() {
 					exit(1);
 				}
 				else if (childPid == 0) {
-					if (isBackgroundProcess == true) {
+					/*if (isBackgroundProcess == true) {
 						bgProcesses[numBgProcesses] = childPid;
 						numBgProcesses++;
 						printf("added bg process %d\n", childPid);
 						fflush(stdout);
-					}
+					}*/
 
 					//use dup2 to set up redirection
 					//Check for input and output files	and store names
@@ -293,6 +293,11 @@ int main() {
 				else {
 					printf("background pid is %d\n", childPid);
 					fflush(stdout);
+
+					bgProcesses[numBgProcesses] = childPid;
+					numBgProcesses++;
+					printf("added bg process #%d: %d\n", numBgProcesses, childPid);
+					fflush(stdout);
 				}
 
 				if (WIFEXITED(shellStatus)) {
@@ -306,6 +311,12 @@ int main() {
 		free(argWithPid);
 
 	//check for terminating bg processe before next prompt 
+	for (i = 0; i < numBgProcesses; i++) {
+
+	}
+
+
+
 	/*
 	childPid = waitpid(-1, &childExitMethod, WNOHANG); 
 	while (childPid > 0) {
@@ -334,9 +345,9 @@ int main() {
 void catchSIGINT(int signo) {
 	//foreground signal terminates self
 	puts("\nForeground signal terminating.\n");				//cannot use printf in signal handlers
+	
+	//kill child process
 	waitpid(signo);
-
-	//kill child processes
 }
 
 void catchSIGTSTP(int signo) {
